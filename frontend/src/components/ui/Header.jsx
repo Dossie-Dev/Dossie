@@ -45,7 +45,7 @@ export default function Header() {
     >
       <div className="flex items-center justify-between h-20 max-w-screen-xl mx-16">
         <div className="flex items-center gap-8">
-          <a href="/">
+          <a href="/home">
             <Image src={logo} alt="Logo" className="w-48" />
           </a>
         </div>

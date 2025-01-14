@@ -4,11 +4,19 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import temp from "../../../assets/sec.png"; // Ensure this path is correct
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 
-export default function Register() {
-  const [formData, setFormData] = useState({});
+export default function SignUp() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    role: "vp", // Default role
+    email: "",
+    password: "",
+    passwordConfirm: "",
+  });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -24,24 +32,74 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-    if (!formData.email || !formData.password) {
-      setError("Email and password are required.");
+    // Validate form data
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.email ||
+      !formData.password ||
+      !formData.passwordConfirm
+    ) {
+      setError("All fields are required.");
+      toast.error("All fields are required.");
+      setLoading(false);
       return;
     }
 
     if (!emailRegex.test(formData.email)) {
       setError("Please enter a valid email address.");
+      toast.error("Please enter a valid email address.");
+      setLoading(false);
       return;
     }
 
-    localStorage.setItem("user", JSON.stringify(formData));
-    console.log("User signed up:", formData);
-    setLoading(false);
+    if (formData.password !== formData.passwordConfirm) {
+      setError("Passwords do not match.");
+      toast.error("Passwords do not match.");
+      setLoading(false);
+      return;
+    }
 
-    toast.success("Registration successful! Please sign in.");
+    // Prepare data for API
+    const userData = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      role: formData.role,
+      email: formData.email,
+      password: formData.password,
+      passwordConfirm: formData.passwordConfirm,
+    };
 
-    router.push("/sign-in");
+    try {
+      const response = await fetch("/api/users/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.message || "Registration failed.");
+        toast.error(errorData.message || "Registration failed.");
+        setLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+      console.log("User signed up:", data);
+      toast.success("we have sent you an activation code to your email.");
+    } catch (error) {
+      setError("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.");
+      console.error("Error during registration:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,40 +116,39 @@ export default function Register() {
           </span>
         </h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-
-        <input
+          <input
             type="text"
             placeholder="First Name"
             className="border p-3 rounded-lg"
             id="firstName"
             onChange={handleChange}
           />
-           <input
+          <input
             type="text"
             placeholder="Last Name"
             className="border p-3 rounded-lg"
-            id="lasttName"
+            id="lastName"
             onChange={handleChange}
           />
           <input
             type="email"
-            placeholder="email"
+            placeholder="Email"
             className="border p-3 rounded-lg"
             id="email"
             onChange={handleChange}
           />
           <input
             type="password"
-            placeholder="password"
+            placeholder="Password"
             className="border p-3 rounded-lg"
             id="password"
             onChange={handleChange}
           />
-           <input
+          <input
             type="password"
-            placeholder="confirm password"
+            placeholder="Confirm Password"
             className="border p-3 rounded-lg"
-            id="confirmPassword"
+            id="passwordConfirm"
             onChange={handleChange}
           />
 
@@ -104,12 +161,14 @@ export default function Register() {
         </form>
         <div className="flex gap-2 mt-5">
           <p>Have an account?</p>
-          <Link href="/login">
-            <span className="text-primary">Login</span>
+          <Link href="/sign-in">
+            <span className="text-primary">Sign in</span>
           </Link>
         </div>
-        {error && <p className="text-red-500 mt-5">{error}</p>}
+        {/* {error && <p className="text-red-500 mt-5">{error}</p>} */}
       </div>
+
+      <ToastContainer />
     </div>
   );
 }
