@@ -1,23 +1,19 @@
-"use client"; 
+"use client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-
-import { Button } from "@/components/ui/button";
 
 export default function Home() {
+  const router = useRouter();
 
 
+  useEffect(() => {
+    // if (access_token && access_token !== "") {
+    //   router.push("/medical-records");
+    // } else {
+      router.push("/home");
+    // }
+  }, []);
 
-
-
-
-
-
-  return (
-   <div>
-    <h1>Hello World</h1>
-    <Button variant={"destructive"}>Click me</Button>
-
-    
-   </div>
-  );
+  return <></>;
 }
