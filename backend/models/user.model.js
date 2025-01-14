@@ -77,21 +77,7 @@ const user = new mongoose.Schema(
       required: false,
       default: "user",
       enum: {
-        // vice president
-        // vice president office
-        // Academic Vice
-        // Research Vice
-        // Administration office
-        // strategic planning directorate
-
-        values: [
-          "vp",
-          "vpo",
-          "av",
-          "rv",
-          "ado",
-          "spd",
-        ],
+        values:["user", "employee", "admin"],
         message: "role must be within the specified values",
       },
     },
