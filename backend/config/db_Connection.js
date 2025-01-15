@@ -1,37 +1,46 @@
 /* Load mongoose module - allow to manipulate the database */
 const mongoose = require("mongoose");
-
 const logger = require("./../utils/logger");
 
-/* get database authentication keys */
+/* Load environment variables */
+require("dotenv").config();
+
+/* Get database authentication keys */
 const { dbAuth } = require("./db_Authentication");
 
-mongoose.connect("mongodb://0.0.0.0:27017/strategic-management?retryWrites=true", {
-  // .connect("mongodb://mongo:27017/beach-resort?retryWrites=true", { //create connection
-  //create connection
-  // useNewUrlParser: true,
-  // useCreateIndex: true,
-  // useFindAndModify: false,
-  // useUnifiedTopology: true, //To use the new Server Discover and Monitoring engine
+/* Retrieve MongoDB URI from environment variables */
+const mongoUri = process.env.DATABASE;
+
+/* Connect to MongoDB */
+mongoose
+  .connect(mongoUri, {
+  })
+  .then(() => {
+    logger.info("Database connection successful");
+  })
+  .catch((err) => {
+    logger.error("Database connection error:", err);
+  });
+
+/* Enable debugging for MongoDB operations */
+mongoose.set("debug", function (collectionName, methodName, ...methodArgs) {
+  try {
+    logger.info(`${collectionName}.${methodName}(${JSON.stringify(methodArgs)})`);
+  } catch (error) {
+    logger.error(`Error in debugging: ${error.message}`);
+  }
 });
 
-mongoose.set("debug", function (collectionName, methodName, ...methodArgs) {
-  // try {
-  //   logger.info(
-  //     `${collectionName}.${methodName}(${JSON.stringify(methodArgs)})`
-  //   );
-  // } catch (error) {
-  //   logger.error(
-  //     `${collectionName}.${methodName}(${JSON.stringify(methodArgs)})`
-  //   );
-  // }
-});
+/* Handle database connection events */
 const dbConn = mongoose.connection;
 
-dbConn.on("error", () => {
-  console.error.bind(console, "connection error");
+dbConn.on("error", (err) => {
+  logger.error("Database connection error:", err);
 });
+
 dbConn.once("open", () => {
-  logger.info("DBconnection successful");
+  logger.info("Database connection is open and operational");
 });
-module.exports = {dbConn,mongoose};
+
+/* Export the connection and mongoose for use in other modules */
+module.exports = { dbConn, mongoose };
