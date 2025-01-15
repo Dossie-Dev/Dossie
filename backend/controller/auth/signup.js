@@ -6,13 +6,9 @@ const { StatusCodes } = require("http-status-codes");
 
 const { fileUpload } = require("./../profile/fileUpload");
 
-
 exports.signUp = catchAsync(async (req, res, next) => {
-
-  const parsedBody = req.body
+  const parsedBody = req.body;
   const { email } = parsedBody;
-
-
 
   const user = await User.findOne({
     email,
@@ -34,7 +30,6 @@ exports.signUp = catchAsync(async (req, res, next) => {
       )
     );
   }
-
 
   //activationToken
   const activationToken = newUser.createActivationToken();
@@ -64,4 +59,3 @@ exports.signUp = catchAsync(async (req, res, next) => {
     );
   }
 });
-
