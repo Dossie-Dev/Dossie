@@ -1,7 +1,22 @@
-import type { NextConfig } from "next";
+// next.config.js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:8080/api/:path*', // Proxy to Backend
+      },
+    ];
+  },
 
-const nextConfig: NextConfig = {
-  /* config options here */
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.pdf$/,
+      type: "asset/resource",
+    });
+    return config;
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
