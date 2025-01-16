@@ -15,7 +15,7 @@ export default function Login() {
     e.preventDefault(); // Prevent default form submission behavior
 
     try {
-      const { data } = await axios.post("http://localhost:8080/api/users/login", {
+      const { data } = await axios.post("/api/users/login", {
         email,
         password, // Send email and password
       });
