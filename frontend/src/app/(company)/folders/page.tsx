@@ -173,6 +173,7 @@ const Folders = () => {
               <div
                 key={folder.folderId}
                 onClick={() => router.push(`/folders/${folder.folderId}`)}
+                className="cursor-pointer"
               >
                 <FolderCard folder={folder} />
               </div>

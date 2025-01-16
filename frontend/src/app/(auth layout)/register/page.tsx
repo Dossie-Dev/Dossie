@@ -12,7 +12,7 @@ export default function SignUp() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    role: "vp", // Default role
+    role: "user", // Default role
     email: "",
     password: "",
     passwordConfirm: "",
@@ -118,40 +118,41 @@ export default function SignUp() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
         <input
-            type="text"
-            placeholder="First Name"
-            className="border p-3 rounded-lg"
-            id="firstName"
-            onChange={handleChange}
-          />
-           <input
-            type="text"
-            placeholder="Last Name"
-            className="border p-3 rounded-lg"
-            id="lasttName"
-            onChange={handleChange}
-          />
-          <input
-            type="email"
-            placeholder="email"
-            className="border p-3 rounded-lg"
-            id="email"
-            onChange={handleChange}
-          />
-          <input
-            type="password"
-            placeholder="password"
-            className="border p-3 rounded-lg"
-            id="password"
-            onChange={handleChange}
-          />
-           <input
-            type="password"
-            placeholder="confirm password"
-            className="border p-3 rounded-lg"
-            id="confirmPassword"
-            onChange={handleChange}
-          />
+  type="text"
+  placeholder="First Name"
+  className="border p-3 rounded-lg"
+  id="firstName" // Matches formData.firstName
+  onChange={handleChange}
+/>
+<input
+  type="text"
+  placeholder="Last Name"
+  className="border p-3 rounded-lg"
+  id="lastName" // Corrected to match formData.lastName
+  onChange={handleChange}
+/>
+<input
+  type="email"
+  placeholder="Email"
+  className="border p-3 rounded-lg"
+  id="email" // Matches formData.email
+  onChange={handleChange}
+/>
+<input
+  type="password"
+  placeholder="Password"
+  className="border p-3 rounded-lg"
+  id="password" // Matches formData.password
+  onChange={handleChange}
+/>
+<input
+  type="password"
+  placeholder="Confirm Password"
+  className="border p-3 rounded-lg"
+  id="passwordConfirm" // Corrected to match formData.passwordConfirm
+  onChange={handleChange}
+/>
+
 
           <button
             disabled={loading}

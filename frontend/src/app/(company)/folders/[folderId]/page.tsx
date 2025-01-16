@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // Next.js router for navigation
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Card from "../../../../components/ui/FileCard";
 
 const FolderDetail = () => {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [folderDetails, setFolderDetails] = useState(null);
   const [files, setFiles] = useState([]);
@@ -49,43 +51,50 @@ const FolderDetail = () => {
     <div>
       {/* Header Section */}
       <header aria-label="Folder Details Header" className="pt-8 mx-16">
-        <div className="flex flex-wrap justify-between py-4 px-8 rounded-md border bg-white">
-          <p className="font-semibold">
-            Document Name:{" "}
-            <span className="font-bold text-blue-700">
+        <div className="flex flex-wrap items-center justify-between py-4 px-8 rounded-md border bg-white">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => router.back()}
+              className="text-blue-700 font-semibold hover:underline"
+            >
+              ← Back
+            </button>
+            <h1 className="font-bold text-xl text-gray-800">
               {folderDetails?.folderName || "Loading..."}
-            </span>
-          </p>
-          <p className="font-semibold">
-            Document ID:{" "}
-            <span className="font-bold text-blue-700">
-              {folderDetails?.folderId || "Loading..."}
-            </span>
-          </p>
-          <p className="font-semibold">
-            Category:{" "}
-            <span className="font-bold text-blue-700">
-              {folderDetails?.category || "Loading..."}
-            </span>
-          </p>
-          <p className="font-semibold">
-            No of Files:{" "}
-            <span className="font-bold text-blue-700">
-              {folderDetails?.noOfFiles || "Loading..."}
-            </span>
-          </p>
-          <p className="font-semibold">
-            Date Added:{" "}
-            <span className="font-bold text-blue-700">
-              {folderDetails?.dateAdded || "Loading..."}
-            </span>
-          </p>
-          <p className="font-semibold">
-            Last Updated:{" "}
-            <span className="font-bold text-blue-700">
-              {folderDetails?.dateLastUpdated || "Loading..."}
-            </span>
-          </p>
+            </h1>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <p className="font-semibold">
+              Document ID:{" "}
+              <span className="font-bold text-blue-700">
+                {folderDetails?.folderId || "Loading..."}
+              </span>
+            </p>
+            <p className="font-semibold">
+              Category:{" "}
+              <span className="font-bold text-blue-700">
+                {folderDetails?.category || "Loading..."}
+              </span>
+            </p>
+            <p className="font-semibold">
+              No of Files:{" "}
+              <span className="font-bold text-blue-700">
+                {folderDetails?.noOfFiles || "Loading..."}
+              </span>
+            </p>
+            <p className="font-semibold">
+              Date Added:{" "}
+              <span className="font-bold text-blue-700">
+                {folderDetails?.dateAdded || "Loading..."}
+              </span>
+            </p>
+            <p className="font-semibold">
+              Last Updated:{" "}
+              <span className="font-bold text-blue-700">
+                {folderDetails?.dateLastUpdated || "Loading..."}
+              </span>
+            </p>
+          </div>
         </div>
       </header>
 

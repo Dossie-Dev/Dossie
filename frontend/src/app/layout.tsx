@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify styles
+import { ToastContainer } from "react-toastify";
 import Header from "@/components/ui/Header";
 import Footer from "@/components/ui/Footer";
 
@@ -18,6 +20,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
       <Header />
+      <ToastContainer
+          position="top-right"
+        />
         {children}
         <Footer />
       </body>
