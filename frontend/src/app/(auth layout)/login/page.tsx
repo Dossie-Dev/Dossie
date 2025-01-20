@@ -15,7 +15,7 @@ export default function Login() {
     e.preventDefault(); // Prevent default form submission behavior
 
     try {
-      const { data } = await axios.post("http://localhost:8080/api/users/login", {
+      const { data } = await axios.post("api/users/login", {
         email,
         password, // Send email and password
       });
@@ -26,7 +26,7 @@ export default function Login() {
     } catch (error) {
       console.error("Error during login:", error);
       const errorMessage = error.response?.data?.message || "An error occurred. Please try again later.";
-      toast.error(errorMessage); // Show error message
+      toast.error("Incorrect email or password, Please try again"); // Show error message
     }
   };
 
@@ -64,6 +64,12 @@ export default function Login() {
         <p>Don't have an account?</p>
         <Link href="/register">
           <span className="text-blue-700 cursor-pointer">Register</span>
+        </Link>
+      </div>
+
+      <div className="flex gap-2 mt-5">
+        <Link href="/forgotPassword">
+          <span className="text-blue-700 cursor-pointer">Forgot Password</span>
         </Link>
       </div>
     </div>

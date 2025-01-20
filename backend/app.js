@@ -77,12 +77,12 @@ const server = require("http").createServer(app);
 // specifiy the port for connection for the socket
 const router = require("./routes/routes");
 
-const io = require("socket.io")(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  },
-});
+// const io = require("socket.io")(server, {
+//   cors: {
+//     origin: "*",
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//   },
+// });
 
 server.listen(3000);
 
