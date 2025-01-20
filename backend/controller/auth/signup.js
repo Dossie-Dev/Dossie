@@ -5,6 +5,7 @@ const Email = require("../../utils/sendMail");
 const { StatusCodes } = require("http-status-codes");
 
 const { fileUpload } = require("./../profile/fileUpload");
+const CompanyModel = require("../../models/company.model");
 
 exports.signUp = catchAsync(async (req, res, next) => {
   const parsedBody = req.body;
@@ -110,7 +111,7 @@ exports.registerEmployee = catchAsync(async (req, res, next) => {
   });
 
 
-  exports.registerUser = catchAsync(async (req, res, next) => {
+  exports.registerUserAccount = catchAsync(async (req, res, next) => {
     const parsedBody = req.body;
     const { email, company } = parsedBody;
 
@@ -133,6 +134,11 @@ exports.registerEmployee = catchAsync(async (req, res, next) => {
       );
     }
 
+
+    // check the company
+    const companyModel = await CompanyModel.findOne({_id: company});
+    if(!companyModel) return next(new APIError('Company does not exist', StatusCodes.BAD_REQUEST));
+
     let newUser = await new User(parsedBody);
 
 
@@ -152,8 +158,11 @@ exports.registerEmployee = catchAsync(async (req, res, next) => {
     await newUser.save();
 
 
+
+
+
     // send the email to the user
-    await new Email(newUser, "http://localhost:4000").sendUserRegistration(password, companyName);
+    await new Email(newUser, "http://localhost:4000").sendUserRegistration(password, {companyName : companyModel.name});
     res.status(StatusCodes.CREATED).json({
       status: "success",
     });
