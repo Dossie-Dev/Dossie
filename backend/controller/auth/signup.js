@@ -59,3 +59,103 @@ exports.signUp = catchAsync(async (req, res, next) => {
     );
   }
 });
+
+
+exports.registerEmployee = catchAsync(async (req, res, next) => {
+  const parsedBody = req.body;
+  const { email } = parsedBody;
+
+  // generate a temporary password
+  const password = Math.random()
+    .toString(36)
+    .slice(-8);
+  parsedBody.password = password;
+  parsedBody.passwordConfirm = password;
+
+  console.log(parsedBody);
+
+  const user = await User.findOne({
+    email,
+  });
+
+  if (user) {
+    return next(
+      new APIError(`Email already registered`, StatusCodes.BAD_REQUEST)
+    );
+  }
+
+  let newUser = await new User(parsedBody);
+
+  if (!newUser) {
+    return next(
+      new APIError(
+        `User cannot be created at the moment`,
+        StatusCodes.BAD_REQUEST
+      )
+    );
+  }
+
+  // activate the user as admin created it
+  newUser.isVerified = true;
+
+
+  await newUser.save();
+
+  // send the email to the user
+    await new Email(newUser, "http://localhost:4000").sendEmployeeRegistration(password);
+    res.status(StatusCodes.CREATED).json({
+      status: "success",
+    });
+
+  });
+
+
+  exports.registerUser = catchAsync(async (req, res, next) => {
+    const parsedBody = req.body;
+    const { email, company } = parsedBody;
+
+    // generate a temporary password
+    const password = Math.random()
+      .toString(36)
+      .slice(-8);
+    parsedBody.password = password;
+    parsedBody.passwordConfirm = password;
+
+
+    const user = await User.findOne({
+      email,
+    });
+
+
+    if (user) {
+      return next(
+        new APIError(`Email already registered`, StatusCodes.BAD_REQUEST)
+      );
+    }
+
+    let newUser = await new User(parsedBody);
+
+
+    if (!newUser) {
+      return next(
+        new APIError(
+          `User cannot be created at the moment`,
+          StatusCodes.BAD_REQUEST
+        )
+      );
+    }
+
+
+    // activate the user as admin created it
+    newUser.isVerified = true;
+
+    await newUser.save();
+
+
+    // send the email to the user
+    await new Email(newUser, "http://localhost:4000").sendUserRegistration(password, companyName);
+    res.status(StatusCodes.CREATED).json({
+      status: "success",
+    });
+
+  });

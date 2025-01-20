@@ -86,4 +86,14 @@ module.exports = class Email {
       `Your password reset token is valid for 10 minutes`
     );
   }
+
+
+  // send the registration email
+  async sendEmployeeRegistration(password) {
+    await this.send(
+      "createEmployeeAccount",
+      `You have registered as a new employee at Dossie`,
+      password
+    );
+  }
 };
