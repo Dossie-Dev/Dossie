@@ -22,7 +22,7 @@ export default function Login() {
 
       // Login successful
       toast.success("Login successful!");
-      router.push("/folders"); // Redirect to folders page
+      router.push("/home"); // Redirect to folders page
     } catch (error) {
       console.error("Error during login:", error);
       const errorMessage = error.response?.data?.message || "An error occurred. Please try again later.";

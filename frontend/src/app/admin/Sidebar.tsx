@@ -48,13 +48,14 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="flex w-64 h-screen flex-col justify-between border-e bg-white shadow-lg">
+    <div className="flex w-64 h-screen flex-col justify-between border-e bg-white">
       <div className="px-4">
         <ul className="mt-6 space-y-1">
-          <NavItem href="/add-new">Add New</NavItem>
-          <NavItem href="/companies">Companies</NavItem>
-          <NavItem href="/folders">Folders</NavItem>
-          <NavItem href="/history">History</NavItem>
+          <NavItem href="/admin/dashboard">Dashboard</NavItem>
+          <NavItem href="/admin/companies">Companies</NavItem>
+          <NavItem href="/admin/employees">Employees</NavItem>
+          <NavItem href="/admin/users">Users</NavItem>
+          <NavItem href="/admin/history">Activity log</NavItem>
 
           <li>
             <details className="group [&_summary::-webkit-details-marker]:hidden">

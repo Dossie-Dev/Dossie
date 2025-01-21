@@ -1,5 +1,7 @@
 import Image from "next/image";
-import tempPic from "../../../assets/sec.png"; // Ensure your image is in the public folder and adjust the path accordingly.
+import tempPic from "../../../assets/sec.png";
+import Team from "@/components/ui/Team"; // Ensure your image is in the public folder and adjust the path accordingly.
+import ContactPage from "../contact/page";
 
 export default function About() {
   return (
@@ -25,17 +27,9 @@ export default function About() {
 
       <div className="px-16 py-32 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
         <div className="max-w-xl mb-10 md:mx-auto sm:text-center lg:max-w-2xl md:mb-12">
-          <div>
-            <p className="inline-block px-3 py-px mb-4 text-xs font-semibold tracking-wider uppercase rounded-full text-primary opacity-75 bg-teal-accent-400">
-              Make history
-            </p>
-          </div>
-          <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold leading-none tracking-tight text-primary opacity-75 sm:text-4xl md:mx-auto">
-            <span className="relative inline-block mr-2">
-              <span className="relative">How</span>
-            </span>
-            To use our website
-          </h2>
+        
+        <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold leading-none tracking-tight text-primary opacity-75 sm:text-4xl md:mx-auto">
+How to Use out Website        </h2>
         </div>
         <div className="grid gap-8 row-gap-5 md:row-gap-8 lg:grid-cols-3">
           <div className="p-8 duration-300 transform bg-white border-2 border-dashed rounded-[2rem] shadow-sm border-primary hover:-translate-y-2">
@@ -96,6 +90,10 @@ export default function About() {
           </div>
         </div>
       </div>
+
+
+      <Team />
+      <ContactPage />
     </>
   );
 }
