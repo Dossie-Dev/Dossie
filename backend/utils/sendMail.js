@@ -39,7 +39,7 @@ module.exports = class Email {
     // })
   }
   //Send the actual email
-  async send(template, subject, password) {
+  async send(template, subject, password, info) {
     //1) render html based on template
     const html = pug.renderFile(
       `${__dirname}/../email/${template}.pug`,
@@ -49,6 +49,7 @@ module.exports = class Email {
         password,
         url: this.url,
         subject,
+        ...info
       }
     );
 
@@ -84,6 +85,27 @@ module.exports = class Email {
     await this.send(
       "activationToken",
       `Your password reset token is valid for 10 minutes`
+    );
+  }
+
+
+  // send the registration email
+  async sendEmployeeRegistration(password) {
+    await this.send(
+      "createEmployeeAccount",
+      `You have registered as a new employee at Dossie`,
+      password
+    );
+  }
+
+
+  // send the registration email for the user
+  async sendUserRegistration(password, info) {
+    await this.send(
+      "createUserAccount",
+      `You have registered as a new user at Dossie`,
+      password,
+      info
     );
   }
 };

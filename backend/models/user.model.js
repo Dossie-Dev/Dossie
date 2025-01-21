@@ -60,6 +60,10 @@ const user = new mongoose.Schema(
         message: "Passwords that you entered do not match",
       },
     },
+    company: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Company",
+    },
     passwordChangedAt: {
       type: Date,
       default: Date.now(),
