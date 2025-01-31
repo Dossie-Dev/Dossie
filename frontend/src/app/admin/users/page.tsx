@@ -1,19 +1,45 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Link from "next/link";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const toggleAccountStatus = async (userId, currentStatus) => {
+    try {
+      const action = currentStatus ? "deactivate" : "activate";
+      const url = `/api/admin/${action}account/${userId}`;
+      const response = await axios.post(url, {}, { withCredentials: true });
+
+      if (response.status === 200) {
+        toast.success(`User ${action}d successfully!`);
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === userId
+              ? { ...user, active: !currentStatus }
+              : user
+          )
+        );
+      } else {
+        toast.error("Failed to update user status. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error toggling account status:", err);
+      toast.error("An error occurred. Please try again later.");
+    }
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         console.log("Fetching users...");
-        const response = await axios.get("api/users/", {
-          withCredentials: true,
-        });
+        const response = await axios.get("/api/users/?role=user", { withCredentials: true });
+
         console.log("Response received:", response);
         const fetchedUsers = response.data?.data?.data || [];
         setUsers(fetchedUsers);
@@ -74,9 +100,12 @@ export default function Users() {
           </ul>
         </div>
 
-        <button className="px-8 py-3 text-sm font-medium rounded-xl text-white bg-primary opacity-75 hover:opacity-100">
+        <Link
+          href="/admin/users/new"
+          className="px-8 py-3 text-sm font-medium rounded-xl text-white bg-primary opacity-75 hover:opacity-100"
+        >
           Add new User
-        </button>
+        </Link>
       </div>
 
       <div className="overflow-x-auto w-full mx-16 mt-4">
@@ -90,23 +119,36 @@ export default function Users() {
               <tr>
                 <th>#</th>
                 <th>Full Name</th>
+                <th>Email</th>
                 <th>Role</th>
+                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
+
+              {/* You can open the modal using document.getElementById('ID').showModal() method */}
+
               {users.map((user, index) => (
-                <tr key={user.id} className="hover cursor-pointer">
+                <tr key={user.id} className="hover cursor-pointer" onClick={()=>document.getElementById('my_modal_4').showModal()}>
                   <th>{index + 1}</th>
                   <td>{user.fullName}</td>
+                  <td>{user.email}</td>
                   <td>{user.role}</td>
+                  <td>{user.active ? "Active" : "Inactive"}</td>
                   <td>
-                    <div className="flex gap-4">
-                      <button className="text-sm font-semibold text-green-800 opacity-75 hover:opacity-100">
+                    <div className="flex gap-2">
+                   
+                      <button className="px-8 py-2 rounded-xl hover:opacity-75 bg-blue-500 text-white">
                         Edit
                       </button>
-                      <button className="text-sm font-semibold text-red-800 opacity-75 hover:opacity-100">
-                        Delete
+                      <button
+                        className={`px-8 py-2 rounded-xl hover:opacity-75 text-white ${
+                          user.active ? "bg-red-500" : "bg-green-500"
+                        }`}
+                        onClick={() => toggleAccountStatus(user.id, user.active)}
+                      >
+                        {user.active ? "Deactivate" : "Activate"}
                       </button>
                     </div>
                   </td>

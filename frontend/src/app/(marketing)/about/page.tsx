@@ -1,12 +1,12 @@
 import Image from "next/image";
-import tempPic from "../../../assets/sec.png";
+import tempPic from "../../../assets/seccc.svg";
 import Team from "@/components/ui/Team"; // Ensure your image is in the public folder and adjust the path accordingly.
 import ContactPage from "../contact/page";
 
 export default function About() {
   return (
     <>
-      <section id="about" className="p-16">
+      <section id="about" className="px-16 py-8">
         <div className="lg:bg-gray-50 lg:p-16 rounded-[4rem] space-y-6 md:flex md:gap-6 justify-center md:space-y-0 lg:items-center">
           <div className="mx-8 md:w-7/12 lg:w-1/2">
             <h2 className="text-3xl font-bold text-primary opacity-75 md:text-4xl">

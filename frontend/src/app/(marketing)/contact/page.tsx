@@ -3,7 +3,7 @@ const ContactPage = () => {
   return (
     <main>
       <section id="contact" className="relative p-32">
-        <div className="absolute top-0 left-0 z-[-1] h-1/2 w-full bg-primary lg:h-[45%] xl:h-1/2"></div>
+        <div className="absolute top-0 left-0 z-[-1] h-1/2 w-full bg-[#3F8EFF] lg:h-[45%] xl:h-1/2"></div>
         <div className="container px-4">
           <div className="flex flex-wrap items-center -mx-4">
             <div className="w-full px-4 lg:w-7/12 xl:w-8/12">
@@ -124,7 +124,7 @@ const ContactPage = () => {
                     ></textarea>
                   </div>
                   <div className="mb-0">
-                    <button className="self-center w-auto px-8 border-0 text-white text-enter btn hover:bg-secondary bg-primary hover:text-white">
+                    <button className="self-center w-auto px-8 border-0 text-white text-enter btn hover:bg-primary bg-[#3F8EFF] hover:text-white">
                       Send Message
                     </button>
                   </div>

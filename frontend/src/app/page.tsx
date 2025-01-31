@@ -27,18 +27,21 @@ export default function Home() {
 
   // React to changes in `currentUser`
   useEffect(() => {
-    if (!currentUser) return;
-
-    if (currentUser.role === "user") {
+    if (!currentUser) {
       router.push('/home');
-    } else if (currentUser.role === "employee") {
+      return;
+    }
+
+    if (currentUser?.role === "user") {
+      router.push('/home');
+    } else if (currentUser?.role === "employee") {
       router.push('/emp');
-    } else if (currentUser.role === "admin") {
+    } else if (currentUser?.role === "admin") {
       router.push('/admin');
     } else {
       router.push('/home');
     }
-  }, [currentUser]);
+  }, [currentUser, router]);
 
   return <></>;
 }

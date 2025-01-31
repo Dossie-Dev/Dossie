@@ -5,13 +5,13 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import logo from "../../assets/logo.png"; // Ensure this path is correct
+import logo from "../../assets/logo.png";
 import Link from "next/link";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [navigationLink, setNavigationLink] = useState("/home"); // Default value
+  const [navigationLink, setNavigationLink] = useState("/home");
   const router = useRouter();
   const pathname = usePathname();
 
@@ -41,12 +41,12 @@ export default function Header() {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get("api/users/me", {
+      const response = await axios.get("/api/users/me", {
         withCredentials: true,
       });
       setCurrentUser(response.data.data.data[0]);
     } catch (error) {
-      console.error("Failed to fetch user data:", error);
+      // console.error("Failed to fetch user data:", error);
       setCurrentUser(null);
     }
   };
@@ -65,7 +65,7 @@ export default function Header() {
 
   const handleSignOut = async () => {
     try {
-      await axios.get("api/users/logout", { withCredentials: true });
+      await axios.get("/api/users/logout", { withCredentials: true });
       localStorage.setItem("isLoggedIn", "false");
       setCurrentUser(null);
       toast.success("You have signed out successfully.");
@@ -75,6 +75,9 @@ export default function Header() {
       toast.error("Failed to log out. Please try again.");
     }
   };
+
+  // Match active route for highlighting
+  const isActiveRoute = (route) => pathname.startsWith(route);
 
   return (
     <header
@@ -97,7 +100,7 @@ export default function Header() {
           <Link href="/faq">
             <span
               className={`text-gray-800 hover:text-primary opacity-75 ${
-                pathname === "/faq" ? "text-primary" : ""
+                isActiveRoute("/faq") ? "text-primary" : ""
               }`}
             >
               FAQ
@@ -106,7 +109,7 @@ export default function Header() {
           <Link href="/about">
             <span
               className={`text-gray-800 hover:text-primary opacity-75 ${
-                pathname === "/about" ? "text-primary" : ""
+                isActiveRoute("/about") ? "text-primary" : ""
               }`}
             >
               About
@@ -115,7 +118,7 @@ export default function Header() {
           <Link href="/contact">
             <span
               className={`text-gray-800 hover:text-primary opacity-75 ${
-                pathname === "/contact" ? "text-primary" : ""
+                isActiveRoute("/contact") ? "text-primary" : ""
               }`}
             >
               Contact
@@ -134,10 +137,7 @@ export default function Header() {
                   <Link href={navigationLink || "/home"}>Workspace</Link>
                 </li>
                 <li>
-                  <button
-                    className="text-red-700"
-                    onClick={handleSignOut}
-                  >
+                  <button className="text-red-700" onClick={handleSignOut}>
                     Logout
                   </button>
                 </li>
