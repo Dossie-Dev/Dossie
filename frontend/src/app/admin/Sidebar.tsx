@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 import axios from "axios";
-
+import { HomeIcon, UsersIcon, BriefcaseIcon, DocumentIcon, LogoutIcon, UserIcon } from '@heroicons/react/outline';
 const Sidebar = () => {
   const pathname = usePathname(); // Hook to get the current path
 
@@ -27,19 +27,18 @@ const Sidebar = () => {
     }
   };
 
-  const NavItem = ({ href, children }) => {
+  const NavItem = ({ href, children, icon }) => {
     const isActive = pathname === href;
     return (
       <li>
         <Link
           href={href}
-          className={`block rounded-lg px-4 py-2 text-sm font-medium ${
-            isActive
-              ? " text-blue-500 font-bold"
-              : "text-gray-600 hover:bg-gray-100 hover:text-gray-700"
+          className={`flex items-center rounded-lg px-4 py-2 text-sm font-medium ${
+            isActive ? "text-blue-500 font-bold bg-blue-100" : "text-gray-600 hover:bg-gray-100 hover:text-gray-700"
           }`}
           aria-current={isActive ? "page" : undefined}
         >
+          <span className="mr-2">{icon}</span>
           {children}
         </Link>
       </li>
@@ -48,18 +47,31 @@ const Sidebar = () => {
 
   return (
     <div className="flex w-64 h-screen flex-col justify-between border-e bg-white">
-      <div className="px-4">
+      <div className="p-4">
         <ul className="mt-6 space-y-1">
-          <NavItem href="/admin/">Dashboard</NavItem>
-          <NavItem href="/admin/companies">Companies</NavItem>
-          <NavItem href="/admin/employees">Employees</NavItem>
-          <NavItem href="/admin/users">Users</NavItem>
-          <NavItem href="/admin/history">Activity log</NavItem>
+          <NavItem href="/admin/" icon={<HomeIcon className="h-5 w-5" />}>
+            Dashboard
+          </NavItem>
+          <NavItem href="/admin/companies" icon={<BriefcaseIcon className="h-5 w-5" />}> 
+            Companies
+          </NavItem>
+          <NavItem href="/admin/employees" icon={<UsersIcon className="h-5 w-5" />}> 
+            Employees
+          </NavItem>
+          <NavItem href="/admin/users" icon={<UsersIcon className="h-5 w-5" />}> 
+            Users
+          </NavItem>
+          <NavItem href="/admin/history" icon={<DocumentIcon className="h-5 w-5" />}> 
+            Activity log
+          </NavItem>
 
           <li>
             <details className="group [&_summary::-webkit-details-marker]:hidden">
-              <summary className="flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700">
-                <span className="text-sm font-medium">Account</span>
+              <summary className="flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+                <span className="flex items-center">
+                  <UserIcon className="h-5 w-5 mr-2" />
+                  <span className="text-sm font-medium">Account</span>
+                </span>
                 <span className="shrink-0 transition duration-300 group-open:-rotate-180">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -76,14 +88,14 @@ const Sidebar = () => {
                 </span>
               </summary>
               <ul className="mt-2 space-y-1 px-4">
-                <NavItem href="/admin/profile">Details</NavItem>
+                <NavItem href="/admin/profile" icon={<UsersIcon className="h-5 w-5" />}>Details</NavItem>
                 <li>
                   <button
                     onClick={handleSignOut}
-                    type="submit"
-                    className="block rounded-lg px-4 py-2 text-sm font-medium 
-                            text-red-500 hover:bg-gray-100"
+                    type="button"
+                    className="flex items-center rounded-lg px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-100 transition-colors"
                   >
+                    <LogoutIcon className="h-5 w-5 mr-2" />
                     Logout
                   </button>
                 </li>

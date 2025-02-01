@@ -35,7 +35,7 @@ export default function EditCompany() {
         const response = await axios.get(`/api/company/${params.companyId}`, {
           withCredentials: true
         });
-        
+
         if (response.status === 200 && response.data?.data) {
           const company = response.data?.data?.data;
           setFormData({
@@ -132,7 +132,7 @@ export default function EditCompany() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       toast.error("Please fix the errors before submitting");
       return;
@@ -164,12 +164,12 @@ export default function EditCompany() {
     } catch (error) {
       console.error("Error updating company:", error);
       const errorMessage = error.response?.data?.message || "An error occurred while updating the company";
-      
+
       // Handle validation errors from the server
       if (error.response?.data?.errors) {
         setErrors(prev => ({ ...prev, ...error.response.data.errors }));
       }
-      
+
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -217,7 +217,7 @@ export default function EditCompany() {
                 name="name"
                 placeholder="Enter company name"
                 className={`input input-bordered w-full ${errors.name ? 'input-error' : ''}`}
-                value={formData.name}
+                defaultValue={formData.name}
                 onChange={handleChange}
                 required
               />
@@ -234,7 +234,7 @@ export default function EditCompany() {
                 name="email"
                 placeholder="company@example.com"
                 className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
-                value={formData.email}
+                defaultValue={formData.email}
                 onChange={handleChange}
                 required
               />
@@ -251,7 +251,7 @@ export default function EditCompany() {
                 name="phoneNumber"
                 placeholder="Enter phone number"
                 className={`input input-bordered w-full ${errors.phoneNumber ? 'input-error' : ''}`}
-                value={formData.phoneNumber}
+                defaultValue={formData.phoneNumber}
                 onChange={handleChange}
                 pattern="[0-9]*"
                 inputMode="numeric"
@@ -271,7 +271,7 @@ export default function EditCompany() {
                 name="address"
                 placeholder="Enter street address"
                 className={`input input-bordered w-full ${errors.address ? 'input-error' : ''}`}
-                value={formData.address}
+                defaultValue={formData.address}
                 onChange={handleChange}
                 required
               />
@@ -289,7 +289,7 @@ export default function EditCompany() {
                   name="city"
                   placeholder="Enter city"
                   className={`input input-bordered w-full ${errors.city ? 'input-error' : ''}`}
-                  value={formData.city}
+                  defaultValue={formData.city}
                   onChange={handleChange}
                   required
                 />
@@ -304,7 +304,7 @@ export default function EditCompany() {
                   name="state"
                   placeholder="Enter state"
                   className={`input input-bordered w-full ${errors.state ? 'input-error' : ''}`}
-                  value={formData.state}
+                  defaultValue={formData.state}
                   onChange={handleChange}
                   required
                 />

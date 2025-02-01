@@ -17,6 +17,14 @@ export default function New() {
     city: "",
     state: "", 
   });
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    phoneNumber: "", 
+    address: "",
+    city: "",
+    state: "", 
+  });
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -41,14 +49,14 @@ export default function New() {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      toast.error("Please enter a valid email address");
+      setErrors(prev => ({ ...prev, email: "Please enter a valid email address" }));
       setLoading(false);
       return;
     }
 
     const phoneRegex = /^\d{10,}$/;
     if (!phoneRegex.test(formData.phoneNumber)) {
-      toast.error("Please enter a valid phone number (at least 10 digits)");
+      setErrors(prev => ({ ...prev, phoneNumber: "Please enter a valid phone number (at least 10 digits)" }));
       setLoading(false);
       return;
     }
@@ -73,6 +81,14 @@ export default function New() {
           city: "", 
           state: "" 
         });
+        setErrors({
+          name: "",
+          email: "",
+          phoneNumber: "", 
+          address: "",
+          city: "",
+          state: "", 
+        });
         router.push("/admin/companies"); 
       } else {
         toast.error("Failed to add the company. Please try again.");
@@ -87,79 +103,151 @@ export default function New() {
   };
 
   return (
-    <div className="p-3 py-8 w-96 mx-auto ">
-      <h1 className="text-center font-semibold my-7 mb-8">
-        <span className="text-2xl font-bold text-primary opacity-75">
-          Add New Company
-        </span>
-      </h1>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Company Name"
-          className="border p-3 rounded-lg"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Company Email"
-          className="border p-3 rounded-lg"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="tel"
-          name="phoneNumber"
-          placeholder="Phone Number (numbers only)"
-          className="border p-3 rounded-lg"
-          value={formData.phoneNumber}
-          onChange={handleChange}
-          pattern="[0-9]*"
-          inputMode="numeric"
-          required
-        />
-        <input
-          type="text"
-          name="address"
-          placeholder="Company Address"
-          className="border p-3 rounded-lg"
-          value={formData.address}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="city"
-          placeholder="City"
-          className="border p-3 rounded-lg"
-          value={formData.city}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="state"
-          placeholder="State"
-          className="border p-3 rounded-lg"
-          value={formData.state}
-          onChange={handleChange}
-          required
-        />
-        <button
-          type="submit"
-          className={`bg-primary text-white p-3 rounded-lg uppercase hover:opacity-95 ${
-            loading ? "opacity-50 cursor-not-allowed" : "opacity-75"
-          }`}
-          disabled={loading}
-        >
-          {loading ? "Adding..." : "Add Company"}
-        </button>
-      </form>
+    <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
+        <div className="px-8 py-6 bg-primary text-white">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold">Add New Company</h1>
+            <Link
+              href="/admin/companies"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+              </svg>
+              Back to Companies
+            </Link>
+          </div>
+        </div>
+        <div className="p-8">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Enter company name"
+                className={`input input-bordered w-full ${errors.name ? 'input-error' : ''}`}
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+              {errors.name && (
+                <p className="mt-1 text-sm text-error">{errors.name}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="company@example.com"
+                className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              {errors.email && (
+                <p className="mt-1 text-sm text-error">{errors.email}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+              <input
+                type="tel"
+                name="phoneNumber"
+                placeholder="Enter phone number"
+                className={`input input-bordered w-full ${errors.phoneNumber ? 'input-error' : ''}`}
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                pattern="[0-9]*"
+                inputMode="numeric"
+                required
+              />
+              <p className="mt-1 text-sm text-gray-500">Numbers only, no spaces or special characters</p>
+              {errors.phoneNumber && (
+                <p className="mt-1 text-sm text-error">{errors.phoneNumber}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <input
+                type="text"
+                name="address"
+                placeholder="Enter street address"
+                className={`input input-bordered w-full ${errors.address ? 'input-error' : ''}`}
+                value={formData.address}
+                onChange={handleChange}
+                required
+              />
+              {errors.address && (
+                <p className="mt-1 text-sm text-error">{errors.address}</p>
+              )}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                <input
+                  type="text"
+                  name="city"
+                  placeholder="Enter city"
+                  className={`input input-bordered w-full ${errors.city ? 'input-error' : ''}`}
+                  value={formData.city}
+                  onChange={handleChange}
+                  required
+                />
+                {errors.city && (
+                  <p className="mt-1 text-sm text-error">{errors.city}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                <input
+                  type="text"
+                  name="state"
+                  placeholder="Enter state"
+                  className={`input input-bordered w-full ${errors.state ? 'input-error' : ''}`}
+                  value={formData.state}
+                  onChange={handleChange}
+                  required
+                />
+                {errors.state && (
+                  <p className="mt-1 text-sm text-error">{errors.state}</p>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-4 pt-4">
+              <Link
+                href="/admin/companies"
+                className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </Link>
+              <button
+                type="submit"
+                disabled={loading}
+                className={`flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors ${
+                  loading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {loading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Adding...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                    <span>Add Company</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
