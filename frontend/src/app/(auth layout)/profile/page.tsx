@@ -237,8 +237,8 @@ export default function Profile() {
   }
 
   return (
-    // <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto py-16">
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto">
         <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
           {/* Header */}
           <div className="px-8 py-6 bg-primary text-white">
@@ -579,6 +579,6 @@ export default function Profile() {
         </div>
       </div>
     </div>
-    // </div>
+    </div>
   );
 }

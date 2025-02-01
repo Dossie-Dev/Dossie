@@ -76,7 +76,7 @@ const Sidebar = () => {
                 </span>
               </summary>
               <ul className="mt-2 space-y-1 px-4">
-                <NavItem href="/account/details">Details</NavItem>
+                <NavItem href="/admin/profile">Details</NavItem>
                 <li>
                   <button
                     onClick={handleSignOut}
