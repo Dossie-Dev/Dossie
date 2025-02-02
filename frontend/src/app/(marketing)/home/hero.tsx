@@ -29,7 +29,7 @@ const Hero = () => {
             </button>
           </Link>
         </div>
-        <div className="md:w-5/12 lg:w-1/3">
+        <div className="md:w-5/12 lg:w-1/3 ">
           <Image
             src={heroPic}
             alt="Hero Image"

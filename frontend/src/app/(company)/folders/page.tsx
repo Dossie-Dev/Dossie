@@ -126,6 +126,23 @@ const Folders = () => {
                   Alphabet (Z-A)
                 </a>
               </li>
+              <li>
+                <a
+                  onClick={() => handleCategoryChange("Alphabet (Z-A)")}
+                  className="text-primary"
+                >
+                  Date (first - last)
+                </a>
+              </li>
+
+              <li>
+                <a
+                  onClick={() => handleCategoryChange("Alphabet (Z-A)")}
+                  className="text-primary"
+                >
+                  Date (last - first)
+                </a>
+              </li>
               {/* Additional sorting options */}
             </ul>
           </div>
@@ -140,6 +157,27 @@ const Folders = () => {
           >
             All
           </div>
+          <div className="dropdown">
+            <div
+              tabIndex={0}
+              role="button"
+              className="btn m-1 mb-4 px-16 bg-[#ecf4ff] text-primary"
+            >
+              General Insurance
+            </div>
+            <ul className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+              <li>
+                <a
+                  onClick={() => handleCategoryChange("Motor & Property")}
+                  className="text-primary"
+                >
+                  Motor & Property
+                </a>
+              </li>
+              {/* More categories */}
+            </ul>
+          </div>
+
           <div className="dropdown">
             <div
               tabIndex={0}
