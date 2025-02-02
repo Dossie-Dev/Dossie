@@ -38,8 +38,9 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.user = payload.user;
     next();
   } catch (error) {
-    return next(
-      new APIError({ refreshToken, accessToken }, StatusCodes.UNAUTHORIZED)
-    );
+    console.error('API Error:', error);
+    const apiErrorResponse = new APIError({ refreshToken, accessToken }, StatusCodes.UNAUTHORIZED)
+    console.error('API Error Response:', apiErrorResponse);
+    return next(apiErrorResponse);
   }
 });
