@@ -125,7 +125,6 @@ exports.deleteOne = (Model) =>
     }
 
     model.active = false;
-    console.log(model);
     await model.save();
 
     res.status(StatusCodes.OK).json({
@@ -156,6 +155,7 @@ exports.deleteMany = (Model, delArr) =>
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
+    console.log(doc);
     if (!doc) {
       return next(
         new APIError(`An error occured while creating the document`, 500)

@@ -2,7 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import temp from "../../assets/sec.png"; // Ensure the image is placed in the public folder
+import temp from "../../assets/secc.svg"; // Ensure the image is placed in the public folder
 
 const Section4 = () => {
   return (
