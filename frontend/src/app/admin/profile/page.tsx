@@ -241,7 +241,7 @@ export default function Profile() {
       <div className="max-w-3xl mx-auto py-16">
         <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
           {/* Header */}
-          <div className="px-8 py-6 bg-primary text-white">
+          <div className="px-8 py-6 bg-blue-500 text-white">
             <div className="flex items-center justify-between">
               <h1 className="text-2xl font-bold">Profile Settings</h1>
               <button
@@ -513,7 +513,7 @@ export default function Profile() {
                               !passwordData.newPassword || 
                               !passwordData.confirmPassword ||
                               passwordData.newPassword !== passwordData.confirmPassword}
-                            className={`flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors ${
+                            className={`flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-500/90 transition-colors ${
                               isPasswordChanging || 
                               !passwordData.currentPassword || 
                               !passwordData.newPassword || 
@@ -559,7 +559,7 @@ export default function Profile() {
                   <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className={`flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors ${
+                    className={`flex items-center gap-2 px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-500/90 transition-colors ${
                       isSaving ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                   >

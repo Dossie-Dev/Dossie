@@ -37,7 +37,8 @@ export default function EditCompany() {
         });
 
         if (response.status === 200 && response.data?.data) {
-          const company = response.data?.data?.data;
+          const company = response.data?.data?.data[0];
+          console.log("dfuhdidusfisdhf",company)
           setFormData({
             name: company.name || "",
             email: company.email || "",
@@ -90,11 +91,11 @@ export default function EditCompany() {
     }
 
     // Phone validation
-    const phoneRegex = /^\d{10,}$/;
-    if (!phoneRegex.test(formData.phoneNumber)) {
-      newErrors.phoneNumber = 'Please enter a valid phone number (at least 10 digits)';
-      isValid = false;
-    }
+    // const phoneRegex = /^\d{10,}$/;
+    // if (!phoneRegex.test(formData.phoneNumber)) {
+    //   newErrors.phoneNumber = 'Please enter a valid phone number (at least 10 digits)';
+    //   isValid = false;
+    // }
 
     // Address validation
     if (formData.address.trim().length < 5) {
@@ -179,7 +180,7 @@ export default function EditCompany() {
   if (fetchLoading) {
     return (
       <div className="min-h-[400px] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center justify-center gap-4">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           <p className="text-gray-600">Loading company data...</p>
         </div>
@@ -191,7 +192,7 @@ export default function EditCompany() {
     <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
         {/* Header */}
-        <div className="px-8 py-6 bg-primary text-white">
+        <div className="px-8 py-6 bg-blue-500 text-white">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold">Edit Company</h1>
             <Link
@@ -325,7 +326,7 @@ export default function EditCompany() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors ${
+                className={`flex items-center gap-2 px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-500/90 transition-colors ${
                   loading ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >

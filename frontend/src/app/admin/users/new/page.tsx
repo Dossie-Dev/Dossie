@@ -175,7 +175,7 @@ export default function New() {
                   <li key={company._id}>
                     <button 
                       type="button"
-                      className="text-primary hover:bg-primary hover:text-white"
+                      className="text-primary hover:bg-blue-500 hover:text-white"
                       onClick={() => handleCompanySelect(company)}
                     >
                       {company.name}
