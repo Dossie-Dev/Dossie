@@ -49,20 +49,22 @@ async function extractResearchPaperData(base64Image) {
   const systemPrompt = `
   You are an OCR-like data extraction tool that extracts structured research paper data from images.
 
-  1. Extract the following keys and structure the output as JSON:
+  1. Extract the following keys and structure the output as JSON for accepting the response Don't add any other text:
      {
          "title": "Example Document Title",
          "authors": ["Author 1", "Author 2"],
          "department": "Department Name",
          "data": "Concatenated text representing the contents of the document."
+         "page_number": "Page number"
      }
   2. The "title" key should contain the document's title. If not present, set it to "null".
   3. The "authors" key should be a list of authors' names. If not present, set it to an empty list.
   4. The "department" key should contain the department name. If not present, set it to "null".
   5. The "data" key should contain the full text of the document, concatenated across multiple pages. Preserve paragraph structure as much as possible. If no text is found, set it to "null".
-  6. Do not add any additional metadata (e.g., file_name, session_id) to the output.
-  7. Ensure compliance with privacy regulations when handling the data.
-  8. Do not interpolate, guess, or generate data; extract only what is present in the images.
+  6. The "page_number" key should contain the page number. If not present, set it to "null".
+  7. Do not add any additional metadata (e.g., file_name, session_id) to the output.
+  8. Ensure compliance with privacy regulations when handling the data.
+  9. Do not interpolate, guess, or generate data; extract only what is present in the images.
   `;
 
   try {
@@ -70,11 +72,12 @@ async function extractResearchPaperData(base64Image) {
       'https://api.openai.com/v1/chat/completions',
       {
         model: 'gpt-4o-mini',
+        response_format: {type: 'json_object'},
         messages: [
           {
             role: 'user',
             content: [
-              { type: 'text', text: 'Extract data from this research paper image.' },
+              { type: 'text', text: systemPrompt },
               { type: 'image_url', image_url: { url: `data:image/png;base64,${base64Image}` } },
             ],
           },
@@ -91,60 +94,67 @@ async function extractResearchPaperData(base64Image) {
     return response.data.choices[0].message.content;
   } catch (error) {
     console.error('Error extracting data from OpenAI API:', error.response?.data || error.message);
-    throw error;
+    return null;
   }
 }
 
 // Route to upload a folder and process its contents
  exports.scanFolder = catchAsync(async (req, res, next) => {
 
-  // create the session id
-  const sessionUuid = crypto.randomUUID();
-  const files = req.files;
+  // const sessionUuid = crypto.randomUUID();
+  const files = [].concat(req.files.files); // Convert files to an array if it's a single file req.files;
+  console.log(files)
   if (!files || files.length === 0) {
     return next(new APIError('There is no file', StatusCodes.NOT_FOUND)); 
   }
 
   const extractedDataList = [];
 
-  for (const file of files.files) {
+  for (const file of files) {
 
-    const sessionFolder = path.join(__dirname, 'uploads', sessionUuid);
+    // const sessionFolder = path.join(__dirname, 'uploads', sessionUuid);
 
-    console.log(sessionFolder)
+    console.log(file);
 
-    if (!fs.existsSync(sessionFolder)) {
-      fs.mkdirSync(sessionFolder, { recursive: true });
-    }
+    // if (!fs.existsSync(sessionFolder)) {
+    //   fs.mkdirSync(sessionFolder, { recursive: true });
+    // }
 
-    const filePath = path.join(sessionFolder, file.filename);
-    fs.renameSync(file.path, filePath);
+    // const filePath = path.join(sessionFolder, file.filename);
+    // fs.renameSync(file.path, filePath);
 
     // Step 1: Optimize the image
-    const optimizedImagePath = await optimizeImage(filePath);
+    // const optimizedImagePath = await optimizeImage(filePath);
 
-    if (optimizedImagePath) {
-      // Step 2: Convert optimized image to base64
-      const base64Image = encodeImageToBase64(optimizedImagePath);
+    // if (optimizedImagePath) {
+    //   // Step 2: Convert optimized image to base64
+
+    //   const base64Image = encodeImageToBase64(optimizedImagePath);
+
+    // create abase64 image
+    const base64Image = file.data.toString('base64');
 
       if (base64Image) {
         // Step 3: Extract data from the research paper using OpenAI API
-        try {
           const extractedData = await extractResearchPaperData(base64Image);
-          extractedDataList.push(JSON.parse(extractedData));
-        } catch (error) {
-          return res.status(500).send(`Failed to extract data from file: ${file.originalname}`);
-        }
-      } else {
-        return res.status(500).send(`Failed to encode image: ${file.originalname}`);
-      }
-    } else {
-      return res.status(500).send(`Failed to optimize image: ${file.originalname}`);
-    }
 
+          if (!extractedData) {
+            return next(new APIError(`Failed to extract data from image: ${file.originalname}`, StatusCodes.BAD_REQUEST));
+          }
+
+
+          
+
+
+          extractedDataList.push(JSON.parse(extractedData));
+      }else{
+        return next( new APIError(`Failed to extract data from image: ${file.originalname}`, StatusCodes.BAD_REQUEST));
+
+      }
   }
 
-  res.status(200).json({
+
+  return res.status(200).json({
     status: 'success',
     message: 'Data extracted successfully',
     data: extractedDataList,
