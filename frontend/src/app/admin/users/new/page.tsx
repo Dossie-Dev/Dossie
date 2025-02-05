@@ -101,7 +101,7 @@ export default function New() {
       
       toast.success("User added successfully!");
       router.push("/admin/users");
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = error.response?.data?.message || "Failed to add user";
       toast.error(errorMessage);
       console.error("Error adding user:", error.response?.data);
