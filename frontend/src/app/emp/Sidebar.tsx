@@ -1,46 +1,44 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { HomeIcon, UsersIcon, BriefcaseIcon, DocumentIcon, LogoutIcon, UserIcon } from '@heroicons/react/outline';
 
 const Sidebar = () => {
-  const router = useRouter();
+  const pathname = usePathname(); // Hook to get the current path
 
   const handleSignOut = async () => {
     try {
       // Make API call to logout endpoint
-      await axios.get(
-        "api/users/logout",
-        {},
-        {
-          withCredentials: true, // Ensures cookies are sent if required
-        }
-      );
+      await axios.get("api/users/logout", {
+        withCredentials: true, // Ensures cookies are sent if required
+      });
       // Clear local data and redirect
       localStorage.setItem("isLoggedIn", "false");
       toast.success("You have signed out successfully.");
-      router.push("/login");
+      window.location.href = "/login"; // Redirect to login page
     } catch (error) {
       console.error("Logout failed:", error);
       toast.error("Failed to log out. Please try again.");
     }
   };
 
-  const NavItem = ({ href, children }) => {
-    const isActive = router.pathname === href;
+  const NavItem = ({ href, children, icon }) => {
+    const isActive = pathname === href;
     return (
       <li>
         <Link
           href={href}
-          className={`block rounded-lg px-4 py-2 text-sm font-medium ${
+          className={`flex items-center rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
             isActive
-              ? "bg-gray-200 text-gray-900"
-              : "text-gray-600 hover:bg-gray-100 hover:text-gray-700"
+              ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
+              : "text-gray-600 hover:bg-blue-50 hover:text-blue-500"
           }`}
           aria-current={isActive ? "page" : undefined}
         >
+          <span className="mr-2">{icon}</span>
           {children}
         </Link>
       </li>
@@ -48,18 +46,32 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="flex w-64 h-screen flex-col justify-between border-e bg-white shadow-lg">
-      <div className="px-4">
+    <div className="flex w-64 h-screen flex-col justify-between border-e bg-white">
+      <div className="p-4">
         <ul className="mt-6 space-y-1">
-          <NavItem href="/add-new">Add New</NavItem>
-          <NavItem href="/companies">Companies</NavItem>
-          <NavItem href="/folders">Folders</NavItem>
-          <NavItem href="/history">History</NavItem>
+          <NavItem href="/emp/new" icon={<HomeIcon className="h-5 w-5" />}>
+            Add New
+          </NavItem>
+          <NavItem href="/emp/documents" icon={<BriefcaseIcon className="h-5 w-5" />}>
+            Documents
+          </NavItem>
+          <NavItem href="/emp/history" icon={<DocumentIcon className="h-5 w-5" />}>
+            History
+          </NavItem>
 
           <li>
             <details className="group [&_summary::-webkit-details-marker]:hidden">
-              <summary className="flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700">
-                <span className="text-sm font-medium">Account</span>
+              <summary
+                className={`flex cursor-pointer items-center justify-between rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
+                  pathname.startsWith("/emp/profile")
+                    ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
+                    : "text-gray-600 hover:bg-blue-50 hover:text-blue-500"
+                }`}
+              >
+                <span className="flex items-center">
+                  <UserIcon className="h-5 w-5 mr-2" />
+                  <span>Account</span>
+                </span>
                 <span className="shrink-0 transition duration-300 group-open:-rotate-180">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -76,14 +88,16 @@ const Sidebar = () => {
                 </span>
               </summary>
               <ul className="mt-2 space-y-1 px-4">
-                <NavItem href="/account/details">Details</NavItem>
+                <NavItem href="/emp/profile" icon={<UsersIcon className="h-5 w-5" />}>
+                  Details
+                </NavItem>
                 <li>
                   <button
                     onClick={handleSignOut}
-                    type="submit"
-                    className="block rounded-lg px-4 py-2 text-sm font-medium 
-                            text-red-500 hover:bg-gray-100"
+                    type="button"
+                    className="flex w-full items-center rounded-lg px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
                   >
+                    <LogoutIcon className="h-5 w-5 mr-2" />
                     Logout
                   </button>
                 </li>
