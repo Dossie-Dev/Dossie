@@ -5,18 +5,16 @@ import { usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { HomeIcon, UsersIcon, BriefcaseIcon, DocumentIcon, LogoutIcon, UserIcon } from '@heroicons/react/outline';
+
 const Sidebar = () => {
   const pathname = usePathname(); // Hook to get the current path
 
   const handleSignOut = async () => {
     try {
       // Make API call to logout endpoint
-      await axios.get(
-        "api/users/logout",
-        {
-          withCredentials: true, // Ensures cookies are sent if required
-        }
-      );
+      await axios.get("api/users/logout", {
+        withCredentials: true, // Ensures cookies are sent if required
+      });
       // Clear local data and redirect
       localStorage.setItem("isLoggedIn", "false");
       toast.success("You have signed out successfully.");
@@ -33,8 +31,10 @@ const Sidebar = () => {
       <li>
         <Link
           href={href}
-          className={`flex items-center rounded-lg px-4 py-2 text-sm font-medium ${
-            isActive ? "text-blue-500 font-bold bg-blue-100" : "text-gray-600 hover:bg-gray-100 hover:text-gray-700"
+          className={`flex items-center rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
+            isActive
+              ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
+              : "text-gray-600 hover:bg-blue-50 hover:text-blue-500"
           }`}
           aria-current={isActive ? "page" : undefined}
         >
@@ -49,28 +49,28 @@ const Sidebar = () => {
     <div className="flex w-64 h-screen flex-col justify-between border-e bg-white">
       <div className="p-4">
         <ul className="mt-6 space-y-1">
-          <NavItem href="/admin/" icon={<HomeIcon className="h-5 w-5" />}>
-            Dashboard
+          <NavItem href="/emp/new" icon={<HomeIcon className="h-5 w-5" />}>
+            Add New
           </NavItem>
-          <NavItem href="/admin/companies" icon={<BriefcaseIcon className="h-5 w-5" />}> 
-            Companies
+          <NavItem href="/emp/documents" icon={<BriefcaseIcon className="h-5 w-5" />}>
+            Documents
           </NavItem>
-          <NavItem href="/admin/employees" icon={<UsersIcon className="h-5 w-5" />}> 
-            Employees
-          </NavItem>
-          <NavItem href="/admin/users" icon={<UsersIcon className="h-5 w-5" />}> 
-            Users
-          </NavItem>
-          <NavItem href="/admin/history" icon={<DocumentIcon className="h-5 w-5" />}> 
-            Activity log
+          <NavItem href="/emp/history" icon={<DocumentIcon className="h-5 w-5" />}>
+            History
           </NavItem>
 
           <li>
             <details className="group [&_summary::-webkit-details-marker]:hidden">
-              <summary className="flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+              <summary
+                className={`flex cursor-pointer items-center justify-between rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
+                  pathname.startsWith("/emp/profile")
+                    ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
+                    : "text-gray-600 hover:bg-blue-50 hover:text-blue-500"
+                }`}
+              >
                 <span className="flex items-center">
                   <UserIcon className="h-5 w-5 mr-2" />
-                  <span className="text-sm font-medium">Account</span>
+                  <span>Account</span>
                 </span>
                 <span className="shrink-0 transition duration-300 group-open:-rotate-180">
                   <svg
@@ -88,12 +88,14 @@ const Sidebar = () => {
                 </span>
               </summary>
               <ul className="mt-2 space-y-1 px-4">
-                <NavItem href="/admin/profile" icon={<UsersIcon className="h-5 w-5" />}>Details</NavItem>
+                <NavItem href="/emp/profile" icon={<UsersIcon className="h-5 w-5" />}>
+                  Details
+                </NavItem>
                 <li>
                   <button
                     onClick={handleSignOut}
                     type="button"
-                    className="flex items-center rounded-lg px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-100 transition-colors"
+                    className="flex w-full items-center rounded-lg px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
                   >
                     <LogoutIcon className="h-5 w-5 mr-2" />
                     Logout
