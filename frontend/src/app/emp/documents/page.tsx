@@ -7,7 +7,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Link from "next/link";
 
 export default function Documents() {
-  const [documents, setDocuments] = useState<any[]>([]);
+  const [documents, setDocuments] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("asc"); // 'asc' or 'desc'
   const [isLoading, setIsLoading] = useState(true);

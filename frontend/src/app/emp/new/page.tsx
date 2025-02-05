@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 export default function New() {
   const router = useRouter();
   const [files, setFiles] = useState<File[]>([]);
-  const [response, setResponse] = useState<any>({});
+  const [response, setResponse] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
