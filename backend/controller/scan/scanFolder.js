@@ -161,7 +161,6 @@ async function extractResearchPaperDataBatch(base64Images) {
     return next(new APIError('There is no file', StatusCodes.NOT_FOUND)); 
   }
 
-console.log(files);
   // sort the file by their name to ensure they are in the correct order
   files.sort((a, b) => {
     const nameA = a.name.toLowerCase();
