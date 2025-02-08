@@ -29,6 +29,7 @@ const { fileUpload } = require("../utils/fileUpload");
 
 const { zip } = require("../utils/zip");
 const { validationRules, checkId } = require("../lib/validation");
+const activityLogMiddleware = require("../utils/activityLogMiddleware");
 
 
 const router = express.Router();
@@ -49,7 +50,7 @@ router.get("/logout", protect, logout);
 router.get("/myEdits", protect); //getMyEdits
 
 router.post("/signup", validationRules[2], signUp);
-router.post("/login", validationRules[3], login);
+router.post("/login", validationRules[3] ,login);
 router.post("/forgotPassword", validationRules[4], forgotPassword);
 router.post("/resetPassword/:token", resetPassword);
 

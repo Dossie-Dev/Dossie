@@ -6,6 +6,7 @@ const catchAsync = require("../../utils/catchAsync");
 const User = require("../../models/user.model");
 const { TokenModel } = require("../../models/Token.model");
 const crypto = require("crypto");
+const ActivityLog = require("../../models/activity.log.model");
 
 
 
@@ -52,6 +53,7 @@ exports.login = catchAsync(async (req, res, next) => {
   
       refreshToken = existingToken.refreshToken;
       attachCookiesToResponse({ res, user: tokenUser, refreshToken });
+      ActivityLog.create({ user: user._id, activity: "Login" });
       res.status(StatusCodes.OK).json({ user: tokenUser });
       return;
     }
@@ -64,6 +66,7 @@ exports.login = catchAsync(async (req, res, next) => {
     await TokenModel.create(userToken);
     attachCookiesToResponse({ res, user: tokenUser, refreshToken });
   
+    ActivityLog.create({ user: user._id, activity: "Login" });
     res.status(StatusCodes.OK).json({ user: tokenUser });
   });
   
