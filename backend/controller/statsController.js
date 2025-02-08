@@ -4,6 +4,8 @@ const { ResearchPaper } = require("../models/research.paper.model");
 const User = require("../models/user.model");
 const catchAsync = require("../utils/catchAsync");
 const moment = require('moment');
+const ActivityLog = require("../models/activity.log.model");
+const { StatusCodes } = require("http-status-codes");
 
 
 
@@ -84,4 +86,26 @@ exports.getDocumentStats = catchAsync(async (req, res, next) => {
         status: "success",
         data: monthsData,
     });
+});
+
+
+
+exports.getLoginActiviyDaily =  catchAsync(async (req, res, next) => {
+  // Get the activity logs for the last 24 hours
+    const now = moment();
+    const last24Hours = moment().subtract(24, 'hours');
+
+    // Fetch login activity count
+    const loginCount = await ActivityLog.countDocuments({
+        date: { $gte: last24Hours.toDate(), $lte: now.toDate() },
+        activity: "Login"
+    }).exec();
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            loginCount
+        }
+    });
+
 });
