@@ -81,7 +81,7 @@ export default function ResetPassword() {
 
         <button
           onClick={handlePasswordReset}
-          className="px-16 py-3 text-sm font-medium rounded-xl text-white bg-primary opacity-75 hover:opacity-100"
+          className="px-16 py-3 text-sm font-medium rounded-xl text-white bg-blue-500 opacity-75 hover:opacity-100"
           disabled={isLoading}
         >
           {isLoading ? "Resetting..." : "Reset Password"}

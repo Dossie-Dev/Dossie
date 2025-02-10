@@ -155,7 +155,7 @@ export default function Employees() {
       <div className="mt-6">
         <Link
           href="/admin/employees/new"
-          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-focus"
+          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-500-focus"
         >
           Add Employee
         </Link>

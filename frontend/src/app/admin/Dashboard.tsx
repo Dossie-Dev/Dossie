@@ -17,7 +17,7 @@ import {
   Legend,
 } from "chart.js";
 
-import Users from './Users'
+
 
 // Register ChartJS components
 ChartJS.register(
@@ -141,10 +141,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-lg shadow w-full">
-            <h2 className="text-lg font-semibold">User List</h2>
-            <Users />
-          </div>
+         
         </>
       )}
     </div>

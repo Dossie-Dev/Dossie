@@ -124,7 +124,7 @@ const ContactPage = () => {
                     ></textarea>
                   </div>
                   <div className="mb-0">
-                    <button className="self-center w-auto px-8 border-0 text-white text-enter btn hover:bg-primary bg-[#3F8EFF] hover:text-white">
+                    <button className="self-center w-auto px-8 border-0 text-white text-enter btn hover:bg-blue-500 bg-[#3F8EFF] hover:text-white">
                       Send Message
                     </button>
                   </div>
