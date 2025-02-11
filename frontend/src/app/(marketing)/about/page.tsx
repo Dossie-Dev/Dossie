@@ -15,9 +15,12 @@ export default function About() {
             <p className="my-8 text-gray-600">
               This system is designed exclusively for the Ethiopian Insurance Corporation to provide a seamless, secure, and efficient way to access and manage customer records. With our tailored solution, EIC can streamline operations and deliver superior service to its clients.
             </p>
-            <button className="btn btn-primary opacity-75 px-12 text-white mr-4">
-              Get Started
-            </button>
+            <button className="bg-blue-500 text-white px-8 py-3 rounded-lg gap-2 transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 flex items-center">
+                  Get Started
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 group-hover:translate-x-1 transition-transform">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </button>
           </div>
           <div className="md:w-4/12 lg:w-1/3">
             <Image src={tempPic} alt="Digital Record System" loading="lazy" />
@@ -34,7 +37,7 @@ How to Use out Website        </h2>
         <div className="grid gap-8 row-gap-5 md:row-gap-8 lg:grid-cols-3">
           <div className="p-8 duration-300 transform bg-white border-2 border-dashed rounded-[2rem] shadow-sm border-primary hover:-translate-y-2">
             <div className="flex items-center mb-2">
-              <p className="flex items-center justify-center w-10 h-10 mr-2 text-lg font-bold text-white rounded-full bg-primary opacity-75">
+              <p className="flex items-center justify-center w-10 h-10 mr-2 text-lg font-bold text-white rounded-full bg-blue-500 opacity-75">
                 1
               </p>
               <p className="text-lg font-bold leading-5">Sign in / Sign up</p>
@@ -46,7 +49,7 @@ How to Use out Website        </h2>
           </div>
           <div className="p-8 duration-300 transform bg-white border-2 border-dashed rounded-[2rem] shadow-sm border-primary hover:-translate-y-2">
             <div className="flex items-center mb-2">
-              <p className="flex items-center justify-center w-10 h-10 mr-2 text-lg font-bold text-white rounded-full bg-primary opacity-75">
+              <p className="flex items-center justify-center w-10 h-10 mr-2 text-lg font-bold text-white rounded-full bg-blue-500 opacity-75">
                 2
               </p>
               <p className="text-lg font-bold leading-5">
@@ -60,7 +63,7 @@ How to Use out Website        </h2>
           </div>
           <div className="relative p-8 duration-300 transform bg-white border-2 rounded-[2rem] shadow-sm border-primary hover:-translate-y-2">
             <div className="flex items-center mb-2">
-              <p className="flex items-center justify-center w-10 h-10 mr-2 text-lg font-bold text-white rounded-full bg-primary opacity-75">
+              <p className="flex items-center justify-center w-10 h-10 mr-2 text-lg font-bold text-white rounded-full bg-blue-500 opacity-75">
                 3
               </p>
               <p className="text-lg font-bold leading-5">
@@ -71,7 +74,7 @@ How to Use out Website        </h2>
               A flower in my garden, a mystery in my panties. Heart attack never
               stopped.
             </p>
-            <p className="absolute top-0 right-0 flex items-center justify-center w-8 h-8 -mt-4 -mr-4 font-bold rounded-full bg-primary sm:-mt-5 sm:-mr-5 sm:w-10 sm:h-10">
+            <p className="absolute top-0 right-0 flex items-center justify-center w-8 h-8 -mt-4 -mr-4 font-bold rounded-full bg-blue-500 sm:-mt-5 sm:-mr-5 sm:w-10 sm:h-10">
               <svg
                 className="text-white w-7"
                 stroke="currentColor"

@@ -105,7 +105,7 @@ export default function New() {
   return (
     <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
-        <div className="px-8 py-6 bg-primary text-white">
+        <div className="px-8 py-6 bg-blue-500 text-white">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold">Add New Company</h1>
             <Link
@@ -226,7 +226,7 @@ export default function New() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors ${
+                className={`flex items-center gap-2 px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-500/90 transition-colors ${
                   loading ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >

@@ -47,7 +47,7 @@ export default function New() {
       } else {
         toast.error("Failed to add employee. Please try again.");
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = error.response?.data?.message || "Failed to add employee";
       toast.error(errorMessage);
       console.error("Error adding employee:", error.response?.data);

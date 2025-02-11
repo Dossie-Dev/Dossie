@@ -50,7 +50,7 @@ export default function Login() {
         password,
       });
 
-      toast.success("Welcome back! Redirecting to your workspace...");
+      toast.success("Welcome back!");
       router.push("/home");
     } catch (error) {
       console.error("Error during login:", error);

@@ -26,7 +26,7 @@ export default function Header() {
     if (currentUser) {
       switch (currentUser.role) {
         case "user":
-          setNavigationLink("/folders");
+          setNavigationLink("/documents");
           break;
         case "employee":
           setNavigationLink("/emp");
@@ -114,7 +114,7 @@ export default function Header() {
               <span
                 className={`relative text-gray-800 transition-colors hover:text-primary ${
                   isActiveRoute(href) 
-                    ? "text-primary after:absolute after:bottom-[-4px] after:left-0 after:h-0.5 after:w-full after:bg-primary after:content-['']" 
+                    ? "text-primary after:absolute after:bottom-[-4px] after:left-0 after:h-0.5 after:w-full after:bg-blue-500 after:content-['']" 
                     : "opacity-75"
                 }`}
               >
@@ -134,7 +134,7 @@ export default function Header() {
                 role="button" 
                 className="btn btn-primary btn-outline gap-2 px-6"
               >
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium">
+                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-primary font-medium">
                   {currentUser.fullName.charAt(0).toUpperCase()}
                 </div>
                 <span>{currentUser.fullName}</span>
