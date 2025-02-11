@@ -90,22 +90,44 @@ exports.getDocumentStats = catchAsync(async (req, res, next) => {
 
 
 
-exports.getLoginActiviyDaily =  catchAsync(async (req, res, next) => {
-  // Get the activity logs for the last 24 hours
-    const now = moment();
-    const last24Hours = moment().subtract(24, 'hours');
+exports.getLoginActivityMonthly = catchAsync(async (req, res, next) => {
+    // Get the start of the current month last year
+    const oneYearAgo = moment().subtract(1, "year").startOf("month");
+    const now = moment().endOf("month");
 
-    // Fetch login activity count
-    const loginCount = await ActivityLog.countDocuments({
-        date: { $gte: last24Hours.toDate(), $lte: now.toDate() },
-        activity: "Login"
-    }).exec();
+    // Aggregate login activity count per month for the last year
+    const loginData = await ActivityLog.aggregate([
+        {
+            $match: {
+                date: { $gte: oneYearAgo.toDate(), $lte: now.toDate() },
+                activity: "Login"
+            }
+        },
+        {
+            $group: {
+                _id: { month: { $month: "$date" }, year: { $year: "$date" } },
+                loginCount: { $sum: 1 }
+            }
+        },
+        {
+            $sort: { "_id.year": 1, "_id.month": 1 }
+        }
+    ]);
+
+    // Initialize result with all months set to zero
+    const result = {};
+    moment.months().forEach(month => {
+        result[month] = 0;
+    });
+
+    // Populate result with actual data
+    loginData.forEach(item => {
+        const monthName = moment().month(item._id.month - 1).format("MMMM");
+        result[monthName] = item.loginCount;
+    });
 
     res.status(StatusCodes.OK).json({
         status: "success",
-        data: {
-            loginCount
-        }
+        data: result
     });
-
 });
