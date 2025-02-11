@@ -55,9 +55,7 @@ const Sidebar = () => {
           <NavItem href="/emp/documents" icon={<BriefcaseIcon className="h-5 w-5" />}>
             Documents
           </NavItem>
-          <NavItem href="/emp/history" icon={<DocumentIcon className="h-5 w-5" />}>
-            History
-          </NavItem>
+         
 
           <li>
             <details className="group [&_summary::-webkit-details-marker]:hidden">

@@ -10,8 +10,21 @@ interface User {
   fullName: string;
   email: string;
   role: string;
+  company: string; 
   active: boolean;
   createdAt: string;
+}
+
+interface Company {
+  _id: string;
+  name: string;
+  phoneNumber: number;
+  email: string;
+  address: string;
+  city: string;
+  state: string;
+  createdAt: string;
+  active: boolean;
 }
 
 type SortField = "name" | "email" | "date";
@@ -25,32 +38,19 @@ export default function Users() {
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
+  const [companyNames, setCompanyNames] = useState<{ [key: string]: string }>({});
 
-  const toggleAccountStatus = async (userId: string, currentStatus: boolean) => {
+  const fetchCompanyName = async (companyId: string) => {
     try {
-      setIsUpdating(userId);
-      const action = currentStatus ? "deactivate" : "activate";
-      const url = `/api/admin/${action}account/${userId}`;
-      const response = await axios.post(url, {}, { withCredentials: true });
-
-      if (response.status === 200) {
-        toast.success(`User ${action}d successfully!`);
-        setUsers((prevUsers) =>
-          prevUsers.map((user) =>
-            user.id === userId
-              ? { ...user, active: !currentStatus }
-              : user
-          )
-        );
-      } else {
-        toast.error("Failed to update user status. Please try again.");
-      }
+      const response = await axios.get(`/api/company/${companyId}`);
+      console.log("response",response);
+      const company = response.data.data.data[0].name;
+      console.log("company",company);
+      return company;
     } catch (err) {
-      console.error("Error toggling account status:", err);
-      toast.error("An error occurred. Please try again later.");
-    } finally {
-      setIsUpdating(null);
+      console.error("Error fetching company name:", err);
     }
+    return "Unknown Company"; 
   };
 
   useEffect(() => {
@@ -60,6 +60,17 @@ export default function Users() {
         const response = await axios.get("/api/users/?role=user", { withCredentials: true });
         const fetchedUsers = response.data?.data?.data || [];
         setUsers(fetchedUsers);
+
+        const companyNameMap: { [key: string]: string } = {};
+        for (const user of fetchedUsers) {
+          const companyName = await fetchCompanyName(user.company);
+          console.log("companyName",companyName);
+          companyNameMap[user.company] = companyName;
+        }
+        setCompanyNames(companyNameMap);
+
+        console.log("companyNames",companyNames);
+
         setError(null);
       } catch (err) {
         console.error("Error fetching users:", err);
@@ -108,6 +119,33 @@ export default function Users() {
     })
     .sort(sortUsers);
 
+  const toggleAccountStatus = async (userId: string, currentStatus: boolean) => {
+    try {
+      setIsUpdating(userId);
+      const action = currentStatus ? "deactivate" : "activate";
+      const url = `/api/admin/${action}account/${userId}`;
+      const response = await axios.post(url, {}, { withCredentials: true });
+
+      if (response.status === 200) {
+        toast.success(`User ${action}d successfully!`);
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === userId
+              ? { ...user, active: !currentStatus }
+              : user
+          )
+        );
+      } else {
+        toast.error("Failed to update user status. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error toggling account status:", err);
+      toast.error("An error occurred. Please try again later.");
+    } finally {
+      setIsUpdating(null);
+    }
+  };
+
   const LoadingSkeleton = () => (
     <div className="space-y-4">
       {[...Array(5)].map((_, i) => (
@@ -124,7 +162,13 @@ export default function Users() {
   );
 
   return (
-    <div className="container mx-auto px-4 md:px-8 py-8">
+    <div className="container mx-auto px-4 md:px-8 py-4">
+      <div className="breadcrumbs text-sm mb-4">
+        <ul>
+          <li><Link href="/admin/dashboard">Dashboard</Link></li>
+          <li className="font-semibold">Users</li>
+        </ul>
+      </div>
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
         <div className="w-full md:flex-1">
           <div className="join w-full">
@@ -240,13 +284,15 @@ export default function Users() {
         ) : (
           <div className="overflow-x-auto">
             <table className="table table-zebra w-full">
-              <thead className="bg-base-200">
+              <thead>
                 <tr>
                   <th>#</th>
                   <th>Full Name</th>
                   <th>Email</th>
+                  <th>Company</th>
                   <th>Status</th>
-                  <th className="text-right">Action</th>
+                  <th>Created At</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -255,8 +301,9 @@ export default function Users() {
                     <th>{index + 1}</th>
                     <td className="font-medium">{user.fullName}</td>
                     <td>{user.email}</td>
+                    <td>{companyNames[user.company] || "Loading..."}</td>
                     <td>
-                      <span className={`badge ${user.active ? 'badge-success' : 'badge-error'} gap-2`}>
+                      <span className={`badge ${user.active ? 'bg-green-500 text-white px-4 py-[0.8rem]' : 'text-white bg-red-500 p-4'} gap-2`}>
                         {user.active ? (
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -269,28 +316,17 @@ export default function Users() {
                         {user.active ? "Active" : "Inactive"}
                       </span>
                     </td>
-                    <td className="text-right">
-                      <div className="tooltip" data-tip={`${user.active ? 'Deactivate' : 'Activate'} user`}>
+                    <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <div className="tooltip" data-tip={`${user.active ? 'Deactivate' : 'Activate'} user`}> 
                         <button
                           className={`btn btn-sm ${
-                            user.active ? "btn-error" : "btn-success"
+                            user.active ? "bg-red-500 hover:bg-red-600 text-white" : "bg-green-500 hover:bg-green-600 text-white"
                           } ${isUpdating === user.id ? "loading" : ""}`}
                           onClick={() => toggleAccountStatus(user.id, user.active)}
                           disabled={isUpdating === user.id}
                         >
-                          {!isUpdating && (
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-2">
-                              {user.active ? (
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                              ) : (
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              )}
-                            </svg>
-                          )}
-                          {isUpdating === user.id ? 
-                            "Updating..." : 
-                            user.active ? "Deactivate" : "Activate"
-                          }
+                          {isUpdating === user.id ? "Updating..." : user.active ? "Deactivate" : "Activate"}
                         </button>
                       </div>
                     </td>

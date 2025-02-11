@@ -112,6 +112,13 @@ export default function New() {
 
   return (
     <div className="p-3 py-8 w-96 mx-auto">
+      <div className="breadcrumbs text-sm mb-4">
+        <ul>
+          <li><Link href="/admin/dashboard">Dashboard</Link></li>
+          <li><Link href="/admin/users">Users</Link></li>
+          <li className="font-semibold">Add New User</li>
+        </ul>
+      </div>
       <h1 className="text-center font-semibold my-7 mb-8">
         <span className="text-2xl font-bold text-primary opacity-75">
           Add New User

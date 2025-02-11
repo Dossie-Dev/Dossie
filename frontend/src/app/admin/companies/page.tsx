@@ -161,8 +161,14 @@ export default function Companies() {
   );
 
   return (
-    <div className="flex flex-col gap-2 w-full m-8">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4">
+    <div className="flex flex-col gap-2 w-full m-4">
+      <div className="breadcrumbs text-sm px-4">
+        <ul>
+          <li><Link href="/admin/dashboard">Dashboard</Link></li>
+          <li className="font-semibold">Companies</li>
+        </ul>
+      </div>
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4 -mt-4">
         <div className="w-full md:flex-1">
           <label className="input input-bordered flex items-center gap-2 w-full">
             <input
@@ -209,7 +215,7 @@ export default function Companies() {
 
           <Link
             href="/admin/companies/new"
-            className="btn btn-primary"
+            className="btn btn-primary "
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
@@ -237,6 +243,7 @@ export default function Companies() {
             <table className="table table-zebra w-full">
               <thead>
                 <tr>
+                  <th>#</th>
                   <th>Company Name</th>
                   <th>Location</th>
                   <th>Status</th>
@@ -245,12 +252,13 @@ export default function Companies() {
                 </tr>
               </thead>
               <tbody>
-                {getFilteredAndSortedCompanies().map((company) => (
+                {getFilteredAndSortedCompanies().map((company, index) => (
                   <tr key={company._id} className="hover">
+                    <td className="font-medium">{index + 1}</td>
                     <td className="font-medium">{company.name}</td>
                     <td>{[company.city, company.state].filter(Boolean).join(', ')}</td>
                     <td>
-                      <div className={`badge ${company.active ? 'badge-success' : 'badge-error'}`}>
+                      <div className={`badge ${company.active ? 'bg-green-500 text-white px-4 py-[0.8rem]' : 'text-white bg-red-500 p-4'}`}>
                         {company.active ? 'Active' : 'Inactive'}
                       </div>
                     </td>
@@ -295,7 +303,7 @@ export default function Companies() {
               <button className="btn" onClick={handleCancelDelete}>
                 Cancel
               </button>
-              <button className="btn btn-error" onClick={handleConfirmDelete}>
+              <button className="btn bg-red-500 text-white" onClick={handleConfirmDelete}>
                 Delete
               </button>
             </div>

@@ -162,9 +162,19 @@ export default function Documents() {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} height={100} className="rounded-lg" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div 
+              key={i} 
+              className="bg-white border border-gray-200 rounded-xl shadow-sm p-6"
+            >
+              <Skeleton height={24} width="80%" className="mb-4" />
+              <div className="space-y-2">
+                <Skeleton height={16} width="60%" />
+                <Skeleton height={16} width="50%" />
+                <Skeleton height={16} width="40%" />
+              </div>
+            </div>
           ))}
         </div>
       )}
@@ -181,9 +191,9 @@ export default function Documents() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDocuments.map((doc, index) => (
             <div
-              key={doc.id}
+              key={doc._id}
               className=" group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => router.push(`/documents/${doc.id}`)} // Navigate to document details
+              onClick={() => router.push(`/documents/${doc._id}`)} // Navigate to document details
               ref={filteredDocuments.length === index + 1 ? lastDocumentElementRef : null}
             >
               <div className="p-6">
@@ -204,7 +214,7 @@ export default function Documents() {
                   <svg className="w-4 h-4 mr-2 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                   </svg>
-                  <span>{new Date(doc.date).toLocaleDateString()}</span>
+                  <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
             </div>

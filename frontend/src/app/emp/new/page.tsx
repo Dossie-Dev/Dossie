@@ -137,119 +137,135 @@ export default function New() {
 
   return (
     <>
-      <div className="min-h-screen flex items-start justify-center p-4 mt-6 mx-auto">
-        <div className="bg-white rounded-lg shadow-md w-full p-6">
-          {/* Drag-and-drop and file upload section */}
-          <div className="flex flex-col gap-2 items-center justify-center text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width={96} height={96} viewBox="0 0 24 24">
-              <g fill="none" stroke="currentColor" strokeWidth={1.5}>
-                <path d="M3 10c0-3.771 0-5.657 1.172-6.828S7.229 2 11 2h2c3.771 0 5.657 0 6.828 1.172S21 6.229 21 10v4c0 3.771 0 5.657-1.172 6.828S16.771 22 13 22h-2c-3.771 0-5.657 0-6.828-1.172S3 17.771 3 14z" opacity={0.5}></path>
-                <path strokeLinecap="round" d="M8 10h8m-8 4h5"></path>
-              </g>
-            </svg>
-            <h1 className="text-2xl font-bold">Upload Document</h1>
-          </div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Breadcrumbs */}
+        <div className="breadcrumbs text-sm mb-4">
+          <ul>
+            <li>
+              <Link href="/emp/documents" className="text-gray-500 hover:text-blue-600 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Documents
+              </Link>
+            </li>
+            <li className="text-blue-500 font-semibold">Upload New Document</li>
+          </ul>
+        </div>
 
-          <div
-            className={`w-[40rem] border-2 border-dashed rounded-lg p-6 my-8 mx-auto transition-all duration-300 ${
-              isDragging ? 'border-blue-500 bg-blue-50 scale-105' : 'border-gray-300'
-            }`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-          >
-            <h2 className="text-lg font-semibold mb-4 flex justify-center items-center">Drag & Drop Files Here</h2>
-            <input
-              type="file"
-              multiple
-              onChange={handleFileChange}
-              className="hidden"
-              id="fileInput"
-            />
-            <label
-              htmlFor="fileInput"
-              className="bg-blue-500 mx-auto w-56 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition flex justify-center items-center"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5V21h18v-4.5M3 8.5V3h18v5.5M3 12h18m-9-9l-3 3m3-3l3 3m-3 3l-3 3m3-3l3 3" />
+        <div className="min-h-screen flex items-start justify-center p-4 mt-6 mx-auto">
+          <div className="bg-white rounded-lg shadow-md w-full p-6">
+            {/* Drag-and-drop and file upload section */}
+            <div className="flex flex-col gap-2 items-center justify-center text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width={96} height={96} viewBox="0 0 24 24">
+                <g fill="none" stroke="currentColor" strokeWidth={1.5}>
+                  <path d="M3 10c0-3.771 0-5.657 1.172-6.828S7.229 2 11 2h2c3.771 0 5.657 0 6.828 1.172S21 6.229 21 10v4c0 3.771 0 5.657-1.172 6.828S16.771 22 13 22h-2c-3.771 0-5.657 0-6.828-1.172S3 17.771 3 14z" opacity={0.5}></path>
+                  <path strokeLinecap="round" d="M8 10h8m-8 4h5"></path>
+                </g>
               </svg>
-              Or Select Files
-            </label>
-          </div>
-
-          {files.length > 0 && (
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold mb-2">Selected Files:</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {files.map((file, index) => (
-                  <div key={index} className="flex items-center p-2 border rounded-lg">
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={file.name}
-                      className="w-16 h-16 object-cover rounded-md"
-                    />
-                    <div className="ml-4">
-                      <p className="text-sm font-medium">{file.name}</p>
-                      <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(2)} KB</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <h1 className="text-2xl font-bold">Upload Document</h1>
             </div>
-          )}
 
-          <div className="flex justify-center items-center gap-4 mb-4">
-            <button
-              type="button"
-              onClick={() => setFiles([])}
-              className="bg-gray-300 text-black px-8 py-2 rounded hover:bg-gray-400 transition flex items-center"
+            <div
+              className={`w-[40rem] border-2 border-dashed rounded-lg p-6 my-8 mx-auto transition-all duration-300 ${
+                isDragging ? 'border-blue-500 bg-blue-50 scale-105' : 'border-gray-300'
+              }`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              Clear Selection
-            </button>
-
-            {formData && (
-              <button
-                className="bg-white mx-auto w-56 text-blue-500 border border-blue-400 px-4 py-2 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition flex justify-center items-center"
-                onClick={()=>document.getElementById('my_modal_3').showModal()}
-              >
-                Preview
-              </button>
-            )}
-
-            <form onSubmit={handleSubmit} className="flex-grow">
-              <button
-                type="submit"
-                disabled={isLoading || files.length === 0}
+              <h2 className="text-lg font-semibold mb-4 flex justify-center items-center">Drag & Drop Files Here</h2>
+              <input
+                type="file"
+                multiple
+                onChange={handleFileChange}
+                className="hidden"
+                id="fileInput"
+              />
+              <label
+                htmlFor="fileInput"
                 className="bg-blue-500 mx-auto w-56 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition flex justify-center items-center"
               >
-                {isLoading ? (
-                  <div className="flex items-center justify-center">
-                    <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Uploading...
-                  </div>
-                ) : (
-                  <>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Submit
-                  </>
-                )}
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5V21h18v-4.5M3 8.5V3h18v5.5M3 12h18m-9-9l-3 3m3-3l3 3m-3 3l-3 3m3-3l3 3" />
+                </svg>
+                Or Select Files
+              </label>
+            </div>
+
+            {files.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold mb-2">Selected Files:</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {files.map((file, index) => (
+                    <div key={index} className="flex items-center p-2 border rounded-lg">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={file.name}
+                        className="w-16 h-16 object-cover rounded-md"
+                      />
+                      <div className="ml-4">
+                        <p className="text-sm font-medium">{file.name}</p>
+                        <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(2)} KB</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-center items-center gap-4 mb-4">
+              <button
+                type="button"
+                onClick={() => setFiles([])}
+                className="bg-gray-300 text-black px-8 py-2 rounded hover:bg-gray-400 transition flex items-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Clear Selection
               </button>
-            </form>
+
+              {formData && (
+                <button
+                  className="bg-white mx-auto w-56 text-blue-500 border border-blue-400 px-4 py-2 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition flex justify-center items-center"
+                  onClick={()=>document.getElementById('my_modal_3').showModal()}
+                >
+                  Preview
+                </button>
+              )}
+
+              <form onSubmit={handleSubmit} className="flex-grow">
+                <button
+                  type="submit"
+                  disabled={isLoading || files.length === 0}
+                  className="bg-blue-500 mx-auto w-56 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition flex justify-center items-center"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center">
+                      <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Uploading...
+                    </div>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                      </svg>
+                      Submit
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Modal for Previewing and Editing Extracted Data */}
+        {/* Modal for Previewing and Editing Extracted Data */}
         <dialog id="my_modal_3" className="modal">
-        <div className="modal-box">            {/* Header */}
+          <div className="modal-box">            {/* Header */}
             <div className="px-8 py-6 bg-blue-500 text-white">
               <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Preview Extracted Data</h1>
@@ -346,7 +362,7 @@ export default function New() {
           </div>
           </div>
           </dialog>
-
+</div>
     </>
   );
 }

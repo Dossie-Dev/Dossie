@@ -17,8 +17,6 @@ import {
   Legend,
 } from "chart.js";
 
-
-
 // Register ChartJS components
 ChartJS.register(
   CategoryScale,
@@ -33,10 +31,10 @@ ChartJS.register(
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
-    totalUsers: 0,
-    activeCompanies: 0,
-    pendingRequests: 0,
-    totalRevenue: 0,
+    no_of_users: 0,
+    no_of_companies: 0,
+    no_of_researchPapers: 0,
+    no_of_employees: 0,
   });
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,10 +42,10 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const statsResponse = await axios.get("/api/dashboard/stats");
+        const statsResponse = await axios.get("/api/stats/");
         const usersResponse = await axios.get("/api/users");
 
-        setStats(statsResponse.data);
+        setStats(statsResponse.data.data);
         setUsers(usersResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -89,46 +87,59 @@ export default function Dashboard() {
     <div className="p-6 w-full">
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
       {loading ? (
-        <div className="flex justify-center items-center">
-          <div className="loader">Loading...</div>
+        <div className="space-y-6">
+          {/* Skeleton Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {[1, 2, 3, 4].map((card) => (
+              <div key={card} className="bg-white p-4 rounded-lg shadow animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-12 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            ))}
+          </div>
+
+          {/* Skeleton Charts */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {[1, 2].map((chart) => (
+              <div key={chart} className="bg-white p-4 rounded-lg shadow animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
+                <div className="h-48 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         <>
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-           {/* Stats Cards */}
-           <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full flex items-center">
-             
-             <div>
-               <h2 className="text-md font-semibold">Total Users</h2>
-               <p className="text-4xl text-blue-500 font-bold">{stats.totalUsers}</p>
-             </div>
-           </div>
-           
-           <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full flex items-center">
-             
-             <div>
-               <h2 className="text-md font-semibold">Active Companies</h2>
-               <p className="text-4xl text-blue-500 font-bold">{stats.activeCompanies}</p>
-             </div>
-           </div>
-           
-           <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full flex items-center">
-             
-             <div>
-               <h2 className="text-md font-semibold">Pending Requests</h2>
-               <p className="text-4xl text-blue-500 font-bold">{stats.pendingRequests}</p>
-             </div>
-           </div>
-           
-           <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full flex items-center">
-            
-             <div>
-               <h2 className="text-md font-semibold">Total Revenue</h2>
-               <p className="text-4xl text-blue-500 font-bold">${stats.totalRevenue}</p>
-             </div>
-           </div>
-         </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {/* Stats Cards */}
+            <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full flex items-center">
+              <div>
+                <h2 className="text-md font-semibold">Total Users</h2>
+                <p className="text-4xl text-blue-500 font-bold">{stats.no_of_users}</p>
+              </div>
+            </div>
 
+            <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full flex items-center">
+              <div>
+                <h2 className="text-md font-semibold">Total Employee</h2>
+                <p className="text-4xl text-blue-500 font-bold">{stats.no_of_employees}</p>
+              </div>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full flex items-center">
+              <div>
+                <h2 className="text-md font-semibold">Total Companies</h2>
+                <p className="text-4xl text-blue-500 font-bold">{stats.no_of_companies}</p>
+              </div>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full flex items-center">
+              <div>
+                <h2 className="text-md font-semibold">Total Research Papers</h2>
+                <p className="text-4xl text-blue-500 font-bold">{stats.no_of_researchPapers}</p>
+              </div>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             {/* Graphs */}
             <div className="bg-white p-4 rounded-lg shadow w-full">
@@ -140,8 +151,6 @@ export default function Dashboard() {
               <Bar data={barChartData} />
             </div>
           </div>
-
-         
         </>
       )}
     </div>

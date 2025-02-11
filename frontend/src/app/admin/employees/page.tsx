@@ -164,7 +164,13 @@ export default function Employees() {
   );
 
   return (
-    <div className="flex flex-col gap-2 w-full m-8">
+    <div className="flex flex-col gap-2 w-full m-4">
+      <div className="breadcrumbs text-sm px-4">
+        <ul>
+          <li><Link href="/admin/dashboard">Dashboard</Link></li>
+          <li className="font-semibold">Employees</li>
+        </ul>
+      </div>
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4">
         <div className="w-full md:flex-1">
           <div className="join w-full">
@@ -251,26 +257,27 @@ export default function Employees() {
         ) : (
           <div className="overflow-x-auto rounded-lg border border-base-200">
             <table className="table table-zebra w-full">
-              <thead className="bg-base-200">
+              <thead>
                 <tr>
+                <th>#</th>
+
                   <th>Full Name</th>
                   <th>Email</th>
-                  <th>Role</th>
                   <th>Status</th>
                   <th>Created At</th>
-                  <th className="text-right">Actions</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredEmployees.map((employee) => (
+                {filteredEmployees.map((employee, index) => (
                   <tr key={employee.id} className="hover">
+                                        <th>{index + 1}</th>
+
                     <td className="font-medium">{employee.fullName}</td>
                     <td>{employee.email}</td>
+                   
                     <td>
-                      <span className="badge badge-ghost">{employee.role}</span>
-                    </td>
-                    <td>
-                      <span className={`badge ${employee.active ? 'badge-success' : 'badge-error'} gap-2`}>
+                      <span className={`badge ${employee.active ? 'bg-green-500 text-white px-4 py-[0.8rem]' : 'text-white bg-red-500 p-4'} gap-2`}>
                         {employee.active ? (
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -288,12 +295,12 @@ export default function Employees() {
                         {new Date(employee.createdAt).toLocaleDateString()}
                       </div>
                     </td>
-                    <td className="text-right">
-                      <div className="flex gap-2 justify-end">
+                    <td>
+                      <div className="flex gap-2">
                         <div className="tooltip" data-tip={`${employee.active ? 'Deactivate' : 'Activate'} employee`}>
                           <button
                             className={`btn btn-sm ${
-                              employee.active ? "btn-error" : "btn-success"
+                              employee.active ? "bg-red-500 hover:bg-red-600 text-white" : "bg-green-500 hover:bg-green-600 text-white"
                             } ${isUpdating === employee.id ? "loading" : ""}`}
                             onClick={() => toggleAccountStatus(employee.id, employee.active)}
                             disabled={isUpdating === employee.id}

@@ -57,7 +57,14 @@ export default function New() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 mt-8">
+    <div className="max-w-md mx-auto p-6">
+      <div className="breadcrumbs text-sm mb-4">
+        <ul>
+          <li><Link href="/admin/dashboard">Dashboard</Link></li>
+          <li><Link href="/admin/employees">Employees</Link></li>
+          <li className="font-semibold">Add New Employee</li>
+        </ul>
+      </div>
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-primary">
           Add New Employee
