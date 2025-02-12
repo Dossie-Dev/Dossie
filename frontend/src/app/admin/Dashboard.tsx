@@ -36,17 +36,66 @@ export default function Dashboard() {
     no_of_researchPapers: 0,
     no_of_employees: 0,
   });
-  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [lineChartData, setLineChartData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "Documents Extracted",
+        data: [],
+        fill: false,
+        borderColor: "#3B82F6",
+        tension: 0.1,
+      },
+    ],
+  });
+  const [barChartData, setBarChartData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "Active Monthly Users",
+        data: [],
+        backgroundColor: "#3B82F6",
+      },
+    ],
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const statsResponse = await axios.get("/api/stats/");
-        const usersResponse = await axios.get("/api/users");
+        const chartResponse = await axios.get("/api/stats/chart");
+        const barChartResponse = await axios.get("/api/stats/login");
 
         setStats(statsResponse.data.data);
-        setUsers(usersResponse.data);
+
+        // Transform chart data
+        const chartData = chartResponse.data.data;
+        const labels = chartData.map(item => item.month);
+        const values = chartData.map(item => item.value);
+        setLineChartData({
+          labels,
+          datasets: [{
+            label: "Documents Extracted",
+            data: values,
+            fill: false,
+            borderColor: "#3B82F6",
+            tension: 0.1,
+          }],
+        });
+
+        // Transform bar chart data
+        const barChartData = barChartResponse.data.data;
+        const barLabels = Object.keys(barChartData);
+        const barValues = Object.values(barChartData);
+        setBarChartData({
+          labels: barLabels,
+          datasets: [{
+            label: "Active Monthly Users",
+            data: barValues,
+            backgroundColor: "#3B82F6",
+          }],
+        });
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -57,30 +106,16 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  // Example data for the line chart
-  const lineChartData = {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
-    datasets: [
-      {
-        label: "User Growth",
-        data: [65, 59, 80, 81, 56, 55, 40],
-        fill: false,
-        borderColor: "#3B82F6",
-        tension: 0.1,
+  const options = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1,
+          callback: (value) => value.toString(),
+        },
       },
-    ],
-  };
-
-  // Example data for the bar chart
-  const barChartData = {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
-    datasets: [
-      {
-        label: "Active Monthly Users",
-        data: [1200, 1900, 3000, 5000, 2000, 3000, 4500],
-        backgroundColor: "#3B82F6",
-      },
-    ],
+    },
   };
 
   return (
@@ -143,8 +178,8 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             {/* Graphs */}
             <div className="bg-white p-4 rounded-lg shadow w-full">
-              <h2 className="text-lg font-semibold text-blue-500">User Growth</h2>
-              <Line data={lineChartData} />
+              <h2 className="text-lg font-semibold text-blue-500">Documents Extracted</h2>
+              <Line data={lineChartData} options={options} />
             </div>
             <div className="bg-white p-4 rounded-lg shadow w-full">
               <h2 className="text-lg font-semibold text-blue-500">Active Monthly Users</h2>
