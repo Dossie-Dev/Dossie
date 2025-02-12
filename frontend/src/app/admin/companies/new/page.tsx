@@ -106,7 +106,7 @@ export default function New() {
     <div className="max-w-2xl mx-auto  p-4 sm:px-6 lg:px-8">
       <div className="breadcrumbs text-sm mb-4">
         <ul>
-          <li><Link href="/admin/dashboard">Dashboard</Link></li>
+          <li><Link href="/admin">Dashboard</Link></li>
           <li><Link href="/admin/companies">Companies</Link></li>
           <li className="font-semibold">Add New Company</li>
         </ul>

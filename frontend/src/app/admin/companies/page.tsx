@@ -31,27 +31,46 @@ export default function Companies() {
     }
     
     // Apply sort
+    console.log("Sorting with type:", sortType);
     switch (sortType) {
       case "az":
-        result.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        result.sort((a, b) => {
+          const nameA = a.name?.trim().toLowerCase() || '';
+          const nameB = b.name?.trim().toLowerCase() || '';
+          return nameA.localeCompare(nameB);
+        });
         break;
       case "za":
-        result.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+        result.sort((a, b) => {
+          const nameA = a.name?.trim().toLowerCase() || '';
+          const nameB = b.name?.trim().toLowerCase() || '';
+          return nameB.localeCompare(nameA);
+        });
         break;
       case "newest":
-        result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        result.sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
         break;
       case "oldest":
-        result.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        result.sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateA - dateB;
+        });
         break;
     }
     
+    console.log("Sorted result:", result);
     return result;
   };
 
   // Debounced search handler
   const debouncedSearch = useCallback(
     debounce((value) => {
+      console.log("Search term:", value);
       setSearchTerm(value);
       setIsSearching(false);
     }, 300),
@@ -64,6 +83,7 @@ export default function Companies() {
   };
 
   const handleSort = (type) => {
+    console.log("Sort type selected:", type);
     setSortType(type);
   };
 
@@ -116,6 +136,7 @@ export default function Companies() {
       try {
         const response = await axios.get("/api/company?active=true", { withCredentials: true });
         const fetchedCompanies = response.data?.data?.data || [];
+        console.log("Fetched companies:", fetchedCompanies);
         setCompanies(fetchedCompanies);
         setError(null);
       } catch (err) {
@@ -126,7 +147,7 @@ export default function Companies() {
         setLoading(false);
       }
     };
-
+  
     fetchCompanies();
   }, []);
 
@@ -164,7 +185,7 @@ export default function Companies() {
     <div className="flex flex-col gap-2 w-full m-4">
       <div className="breadcrumbs text-sm px-4">
         <ul>
-          <li><Link href="/admin/dashboard">Dashboard</Link></li>
+          <li><Link href="/admin">Dashboard</Link></li>
           <li className="font-semibold">Companies</li>
         </ul>
       </div>
@@ -197,7 +218,7 @@ export default function Companies() {
         </div>
 
         <div className="flex gap-2">
-          <div className="dropdown dropdown-end">
+          {/* <div className="dropdown dropdown-end">
             <div tabIndex={0} role="button" className="btn btn-outline btn-primary">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3z" />
@@ -211,7 +232,7 @@ export default function Companies() {
               <li><a className={sortType === "newest" ? "active" : ""} onClick={() => handleSort("newest")}>Newest first</a></li>
               <li><a className={sortType === "oldest" ? "active" : ""} onClick={() => handleSort("oldest")}>Oldest first</a></li>
             </ul>
-          </div>
+          </div> */}
 
           <Link
             href="/admin/companies/new"

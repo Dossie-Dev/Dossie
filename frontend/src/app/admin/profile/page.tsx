@@ -241,7 +241,7 @@ export default function Profile() {
     <div className="max-w-3xl mx-auto py-16">
       <div className="breadcrumbs text-sm mb-4">
         <ul>
-          <li><Link href="/admin/dashboard">Dashboard</Link></li>
+          <li><Link href="/admin">Dashboard</Link></li>
           <li className="font-semibold">Profile Settings</li>
         </ul>
       </div>

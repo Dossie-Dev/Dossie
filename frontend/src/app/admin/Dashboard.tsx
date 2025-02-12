@@ -65,7 +65,7 @@ export default function Dashboard() {
         label: "User Growth",
         data: [65, 59, 80, 81, 56, 55, 40],
         fill: false,
-        borderColor: "rgb(75, 192, 192)",
+        borderColor: "#3B82F6",
         tension: 0.1,
       },
     ],
@@ -76,16 +76,16 @@ export default function Dashboard() {
     labels: ["January", "February", "March", "April", "May", "June", "July"],
     datasets: [
       {
-        label: "Revenue",
+        label: "Active Monthly Users",
         data: [1200, 1900, 3000, 5000, 2000, 3000, 4500],
-        backgroundColor: "rgba(53, 162, 235, 0.5)",
+        backgroundColor: "#3B82F6",
       },
     ],
   };
 
   return (
     <div className="p-6 w-full">
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-4 text-blue-500">Dashboard</h1>
       {loading ? (
         <div className="space-y-6">
           {/* Skeleton Stats Cards */}
@@ -114,40 +114,40 @@ export default function Dashboard() {
             {/* Stats Cards */}
             <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full flex items-center">
               <div>
-                <h2 className="text-md font-semibold">Total Users</h2>
-                <p className="text-4xl text-blue-500 font-bold">{stats.no_of_users}</p>
+              <p className="text-4xl text-blue-500 font-bold">{stats.no_of_users}</p>
+                <h2 className="text-md font-semibold mt-2">Total Users</h2>
               </div>
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full flex items-center">
               <div>
-                <h2 className="text-md font-semibold">Total Employee</h2>
-                <p className="text-4xl text-blue-500 font-bold">{stats.no_of_employees}</p>
+              <p className="text-4xl text-blue-500 font-bold">{stats.no_of_employees}</p>
+                <h2 className="text-md font-semibold mt-2">Total Employee</h2>
               </div>
             </div>
             
             <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full flex items-center">
               <div>
-                <h2 className="text-md font-semibold">Total Companies</h2>
-                <p className="text-4xl text-blue-500 font-bold">{stats.no_of_companies}</p>
+              <p className="text-4xl text-blue-500 font-bold">{stats.no_of_companies}</p>
+                <h2 className="text-md font-semibold mt-2">Total Companies</h2>
               </div>
             </div>
             
             <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow w-full flex items-center">
               <div>
-                <h2 className="text-md font-semibold">Total Research Papers</h2>
-                <p className="text-4xl text-blue-500 font-bold">{stats.no_of_researchPapers}</p>
+              <p className="text-4xl text-blue-500 font-bold">{stats.no_of_researchPapers}</p>
+                <h2 className="text-md font-semibold mt-2">Total Research Papers</h2>
               </div>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             {/* Graphs */}
             <div className="bg-white p-4 rounded-lg shadow w-full">
-              <h2 className="text-lg font-semibold">User Growth</h2>
+              <h2 className="text-lg font-semibold text-blue-500">User Growth</h2>
               <Line data={lineChartData} />
             </div>
             <div className="bg-white p-4 rounded-lg shadow w-full">
-              <h2 className="text-lg font-semibold">Revenue Trends</h2>
+              <h2 className="text-lg font-semibold text-blue-500">Active Monthly Users</h2>
               <Bar data={barChartData} />
             </div>
           </div>

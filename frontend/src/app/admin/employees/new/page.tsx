@@ -60,7 +60,7 @@ export default function New() {
     <div className="max-w-md mx-auto p-6">
       <div className="breadcrumbs text-sm mb-4">
         <ul>
-          <li><Link href="/admin/dashboard">Dashboard</Link></li>
+          <li><Link href="/admin">Dashboard</Link></li>
           <li><Link href="/admin/employees">Employees</Link></li>
           <li className="font-semibold">Add New Employee</li>
         </ul>
