@@ -46,41 +46,33 @@ exports.getStats = catchAsync(async (req, res, next) => {
 
 
 exports.getDocumentStats = catchAsync(async (req, res, next) => {
-    // no of research papers that are uploaded per month for a year
-    // {month : "the month", value: "count of the research papers"}
-    // collect the data from the database
-    // starting from one year ago
-    // end at the current month
+    // Get the current month and one year ago
+    const now = moment().endOf('month');
+    const oneYearAgo = moment().subtract(1, 'year').startOf('month');
+    
+    let monthsData = [];
 
-    // get the one year ago data
-    // create a look and iterate over the data
-        const now = moment().endOf('month');
-        const oneYearAgo = moment().subtract(1, 'year').startOf('month');
-        
-        let monthsData = [];
-        
-        // Initialize all months with zero count
-        for (let i = 0; i < 12; i++) {
-            monthsData.push({
-                month: oneYearAgo.clone().add(i, 'months').format('YYYY-MM'),
-                value: 0
-            });
+    // Initialize all months with zero count
+    for (let i = 0; i < 12; i++) {
+        monthsData.push({
+            month: oneYearAgo.clone().add(i, 'months').format('MMMM'), // Display full month name
+            value: 0
+        });
+    }
+
+    // Fetch papers created within the last year
+    const papers = await ResearchPaper.find({
+        createdAt: { $gte: oneYearAgo.toDate(), $lte: now.toDate() }
+    });
+
+    // Count papers per month
+    papers.forEach(paper => {
+        const paperMonth = moment(paper.createdAt).format('MMMM'); // Get month name
+        const index = monthsData.findIndex(item => item.month === paperMonth);
+        if (index !== -1) {
+            monthsData[index].value++;
         }
-
-        // Fetch papers created within the last year
-        const papers = await ResearchPaper.find({
-            createdAt: { $gte: oneYearAgo.toDate(), $lte: now.toDate() }
-        });
-
-        // Count papers per month
-        papers.forEach(paper => {
-            const paperMonth = moment(paper.createdAt).format('YYYY-MM');
-            const index = monthsData.findIndex(item => item.month === paperMonth);
-            if (index !== -1) {
-                monthsData[index].value++;
-            }
-        });
-
+    });
 
     res.status(200).json({
         status: "success",
