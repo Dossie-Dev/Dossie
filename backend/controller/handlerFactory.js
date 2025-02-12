@@ -66,6 +66,8 @@ exports.getAll = (Model, options = "", obj = {}) =>
 
     const doc = await query.query;
 
+    console.log(doc)
+
     if (!doc) {
       return next(
         new APIError(`No document found with id = ${req.params.id}`, 404)
