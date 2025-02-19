@@ -132,12 +132,12 @@ export default function Header() {
               <div 
                 tabIndex={0} 
                 role="button" 
-                className="btn btn-primary btn-outline gap-2 px-6"
+                className="btn btn-primary btn-outline gap-2 px-6 group"
               >
-                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-primary font-medium">
+                <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center group-hover:bg-blue-500/70 justify-center text-primary group-hover:text-white font-medium">
                   {currentUser.fullName.charAt(0).toUpperCase()}
                 </div>
-                <span>{currentUser.fullName}</span>
+                <span className="group-hover:text-white">{currentUser.fullName}</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                 </svg>

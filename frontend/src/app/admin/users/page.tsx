@@ -163,7 +163,7 @@ export default function Users() {
 
   return (
     <div className="container mx-auto px-4 md:px-8 py-4">
-      <div className="breadcrumbs text-sm mb-4">
+      <div className="breadcrumbs text-sm mb-2">
         <ul>
           <li><Link href="/admin">Dashboard</Link></li>
           <li className="font-semibold">Users</li>

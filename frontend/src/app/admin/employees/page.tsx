@@ -165,7 +165,7 @@ export default function Employees() {
 
   return (
     <div className="flex flex-col gap-2 w-full m-4">
-      <div className="breadcrumbs text-sm px-4">
+      <div className="breadcrumbs text-sm px-4 -mb-4">
         <ul>
           <li><Link href="/admin">Dashboard</Link></li>
           <li className="font-semibold">Employees</li>

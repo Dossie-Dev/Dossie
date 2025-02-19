@@ -19,16 +19,31 @@ export default function Documents() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [documentsPerPage] = useState(10);
+  const [totalDocuments, setTotalDocuments] = useState(0);
+  const [hasMore, setHasMore] = useState(true); // Track if there are more documents to load
 
   const router = useRouter();
 
+  // Fetch documents
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        const response = await fetch(`/api/research?page=${currentPage}&limit=${documentsPerPage}`);
+        const response = await fetch(
+          `/api/research?page=${currentPage}&limit=${documentsPerPage}`
+        );
         if (!response.ok) throw new Error("Failed to fetch documents");
+
         const data = await response.json();
-        setDocuments((prevDocs) => [...prevDocs, ...data.data.data]);
+        const newDocuments = data.data.data;
+
+        // Append new documents to the existing list
+        setDocuments((prevDocs) => [...prevDocs, ...newDocuments]);
+        setTotalDocuments(data.total);
+
+        // Check if there are more documents to load
+        if (newDocuments.length < documentsPerPage) {
+          setHasMore(false);
+        }
       } catch (error) {
         console.error("Error fetching documents:", error);
         setError("Failed to load documents. Please try again later.");
@@ -36,31 +51,53 @@ export default function Documents() {
         setIsLoading(false);
       }
     };
+
     fetchDocuments();
   }, [currentPage]);
 
+  // Infinite scroll logic
   const observer = useRef<IntersectionObserver>();
-  const lastDocumentElementRef = useCallback((node) => {
-    if (isLoading) return;
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setCurrentPage((prevPage) => prevPage + 1);
-      }
-    });
-    if (node) observer.current.observe(node);
-  }, []);
+  const lastDocumentElementRef = useCallback(
+    (node) => {
+      if (isLoading || !hasMore) return; // Don't load more if already loading or no more documents
+      if (observer.current) observer.current.disconnect(); // Disconnect previous observer
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setCurrentPage((prevPage) => prevPage + 1); // Load next page
+        }
+      });
+
+      if (node) observer.current.observe(node); // Observe the last document element
+    },
+    [isLoading, hasMore]
+  );
 
   // Filter and sort documents
   const filteredDocuments = documents
     .filter((doc) => doc.title.toLowerCase().includes(searchQuery.toLowerCase()))
-    .filter((doc) => (filters.department ? doc.department === filters.department : true))
-    .filter((doc) => (filters.author ? doc.authors.includes(filters.author) : true))
-    .filter((doc) => (filters.date ? new Date(doc.date).toDateString() === new Date(filters.date).toDateString() : true))
+    .filter((doc) =>
+      filters.department ? doc.department === filters.department : true
+    )
+    .filter((doc) =>
+      filters.author ? doc.authors.includes(filters.author) : true
+    )
+    .filter((doc) =>
+      filters.date
+        ? new Date(doc.date).toDateString() ===
+          new Date(filters.date).toDateString()
+        : true
+    )
     .sort((a, b) => {
       const titleA = a.title.toLowerCase();
       const titleB = b.title.toLowerCase();
-      return sortOrder === "asc" ? (titleA < titleB ? -1 : 1) : titleA > titleB ? -1 : 1;
+      return sortOrder === "asc"
+        ? titleA < titleB
+          ? -1
+          : 1
+        : titleA > titleB
+        ? -1
+        : 1;
     });
 
   // Reset filters
@@ -189,36 +226,76 @@ export default function Documents() {
       {/* Document List */}
       {!isLoading && !error && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredDocuments.map((doc, index) => (
-            <div
-              key={doc._id}
-              className=" group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => router.push(`/documents/${doc._id}`)} // Navigate to document details
-              ref={filteredDocuments.length === index + 1 ? lastDocumentElementRef : null}
-            >
-              <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 group-hover:text-blue-600">{doc.title}</h2>
-                <div className="flex items-center text-sm text-gray-600 mb-2">
-                  <svg className="w-4 h-4 mr-2 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                  </svg>
-                  <span>{doc.authors.join(", ")}</span>
+          {filteredDocuments.map((doc, index) => {
+            const uniqueKey = `${doc._id}-${doc.createdAt}`;
+            const isLastDocument = filteredDocuments.length === index + 1;
+
+            return (
+              <Link
+                key={uniqueKey}
+                className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                href={`/emp/documents/${doc._id}`}
+                ref={isLastDocument ? lastDocumentElementRef : null} // Attach ref to the last document
+              >
+                <div className="p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4 group-hover:text-blue-600">
+                    {doc.title}
+                  </h2>
+                  <div className="flex items-center text-sm text-gray-600 mb-2">
+                    <svg
+                      className="w-4 h-4 mr-2 text-blue-500"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                      />
+                    </svg>
+                    <span>{doc.authors.join(", ")}</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600 mb-2">
+                    <svg
+                      className="w-4 h-4 mr-2 text-blue-500"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"
+                      />
+                    </svg>
+                    <span>{doc.department}</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <svg
+                      className="w-4 h-4 mr-2 text-blue-500"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+                      />
+                    </svg>
+                    <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
+                  </div>
                 </div>
-                <div className="flex items-center text-sm text-gray-600 mb-2">
-                  <svg className="w-4 h-4 mr-2 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
-                  </svg>
-                  <span>{doc.department}</span>
-                </div>
-                <div className="flex items-center text-sm text-gray-600">
-                  <svg className="w-4 h-4 mr-2 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                  </svg>
-                  <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
-                </div>
-              </div>
-            </div>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       )}
 
@@ -226,6 +303,13 @@ export default function Documents() {
       {!isLoading && !error && filteredDocuments.length === 0 && (
         <div className="text-center py-8 text-gray-500">
           No documents found. Try adjusting your filters or search query.
+        </div>
+      )}
+
+      {/* Loading More Indicator */}
+      {hasMore && !isLoading && (
+        <div className="text-center py-4">
+          Loading more documents...
         </div>
       )}
     </div>

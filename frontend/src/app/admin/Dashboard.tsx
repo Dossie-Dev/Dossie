@@ -70,9 +70,9 @@ export default function Dashboard() {
         setStats(statsResponse.data.data);
 
         // Transform chart data
-        const chartData = chartResponse.data.data;
-        const labels = chartData.map(item => item.month);
-        const values = chartData.map(item => item.value);
+        const chartData = chartResponse.data.data; // This is now an array of objects
+        const labels = chartData.map(item => item.month); // Extracting months
+        const values = chartData.map(item => item.value); // Extracting values
         setLineChartData({
           labels,
           datasets: [{
