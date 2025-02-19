@@ -39,7 +39,7 @@ exports.getAll = (Model, options = "", obj = {}) =>
     // console.log(currentTime)
     // console.log(_parsedOriginalUrl.pathname)
 
-    let opt = {};
+    let opt = {...req.body};
     // if (options === "addUser") opt = { user: req.user.id };
     // if (options === "myCertificate") opt = { user: req.user.id };
     // if (options === "addOrganization") opt = { organization: req.params.id };
@@ -51,7 +51,6 @@ exports.getAll = (Model, options = "", obj = {}) =>
 
     const page = req.query.page * 1 || 1;
 
-    console.log(opt, options)
     const limit = req.query.limit * 1 || 10;
 
     let count = new APIFeatures(Model.find(opt), req.query).filter().count();
@@ -65,8 +64,6 @@ exports.getAll = (Model, options = "", obj = {}) =>
       .populate();
 
     const doc = await query.query;
-
-    console.log(doc)
 
     if (!doc) {
       return next(
