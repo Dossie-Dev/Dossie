@@ -118,7 +118,9 @@ exports.updateOne = (Model) =>
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     // const doc = await Model.findByIdAndDelete(req.params.id);
-    const model = await Model.findOne({ _id: req.params.id });
+    const model = await Model.deleteOne({ _id: req.params.id });
+
+
 
     if (!model) {
       return next(
@@ -126,8 +128,7 @@ exports.deleteOne = (Model) =>
       );
     }
 
-    model.active = false;
-    await model.save();
+    // delete the value that was found from the model
 
     res.status(StatusCodes.OK).json({
       status: "success",
