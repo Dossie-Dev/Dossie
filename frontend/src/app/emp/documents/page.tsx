@@ -24,36 +24,38 @@ export default function Documents() {
 
   const router = useRouter();
 
-  // Fetch documents
-  useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        const response = await fetch(
-          `/api/research?page=${currentPage}&limit=${documentsPerPage}`
-        );
-        if (!response.ok) throw new Error("Failed to fetch documents");
+// Fetch documents
+useEffect(() => {
+  const fetchDocuments = async () => {
+    try {
+      const response = await axios.get(
+        `/api/research?page=${currentPage}&limit=${documentsPerPage}`
+      );
 
-        const data = await response.json();
-        const newDocuments = data.data.data;
+      const data = response.data;
+      const newDocuments = data.data.data;
 
-        // Append new documents to the existing list
-        setDocuments((prevDocs) => [...prevDocs, ...newDocuments]);
-        setTotalDocuments(data.total);
+      // Append new documents to the existing list
+      setDocuments((prevDocs) => [...prevDocs, ...newDocuments]);
+      setTotalDocuments(data.total);
 
-        // Check if there are more documents to load
-        if (newDocuments.length < documentsPerPage) {
-          setHasMore(false);
-        }
-      } catch (error) {
-        console.error("Error fetching documents:", error);
-        setError("Failed to load documents. Please try again later.");
-      } finally {
-        setIsLoading(false);
+      // Check if there are more documents to load
+      if (newDocuments.length < documentsPerPage) {
+        setHasMore(false);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      setError("Failed to load documents. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    fetchDocuments();
-  }, [currentPage]);
+  fetchDocuments();
+}, [currentPage]);
+
+
+
 
   // Infinite scroll logic
   const observer = useRef<IntersectionObserver>();

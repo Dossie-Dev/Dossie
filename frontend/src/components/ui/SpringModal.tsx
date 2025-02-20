@@ -2,64 +2,52 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FiAlertCircle } from "react-icons/fi";
 import { useState } from "react";
 import {
-
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
- 
 } from '../../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
-
-import { Link,useNavigate } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-
-
-
+import axios from 'axios'; // Import Axios
 
 const ExampleWrapper = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { currentUser, error, loading } = useSelector((state) => state.user);
 
-
   const handleDeleteUser = async () => {
-  
     try {
-      console.log("delete user client")
+      console.log("delete user client");
       dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
-        method: 'DELETE',
-      });
-      const data = await res.json();
-      if (!res.ok) {
+      const res = await axios.delete(`/api/user/delete/${currentUser._id}`); // Use Axios for DELETE request
+      const data = res.data; // Axios stores the response data in `data` property
+      if (res.status !== 200) { // Check for non-200 status codes
         dispatch(deleteUserFailure(data.message));
       } else {
         dispatch(deleteUserSuccess(data));
-        navigate('/sign-in')
+        navigate('/sign-in');
       }
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
     }
   };
 
-
   return (
-   <>
+    <>
       <button
         onClick={() => setIsOpen(true)}
-        className='text-red-600  hover:text-primary  font-medium  rounded-md flex gap-2'
-        >
+        className='text-red-600 hover:text-primary font-medium rounded-md flex gap-2'
+      >
         Delete Account
       </button>
       <SpringModal isOpen={isOpen} setIsOpen={setIsOpen} handleDeleteUser={handleDeleteUser} />
-        </>
-   
+    </>
   );
 };
 
-const SpringModal = ({ isOpen, setIsOpen,handleDeleteUser }) => {
+const SpringModal = ({ isOpen, setIsOpen, handleDeleteUser }) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -83,10 +71,10 @@ const SpringModal = ({ isOpen, setIsOpen,handleDeleteUser }) => {
                 <FiAlertCircle />
               </div>
               <h3 className="text-3xl font-bold text-center mb-2">
-              Are you sure?
+                Are you sure?
               </h3>
               <p className="text-center mb-6">
-              Are you sure you want to delete your account?
+                Are you sure you want to delete your account?
               </p>
               <div className="flex gap-2">
                 <button
@@ -99,7 +87,7 @@ const SpringModal = ({ isOpen, setIsOpen,handleDeleteUser }) => {
                   onClick={() => setIsOpen(false)}
                   className="bg-white hover:opacity-90 transition-opacity text-indigo-600 font-semibold w-full py-2 rounded"
                 >
-                 No, cancel
+                  No, cancel
                 </button>
               </div>
             </div>

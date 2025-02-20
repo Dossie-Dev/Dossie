@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import axios from 'axios'; // Import axios
 
 export default function New() {
   const router = useRouter();
@@ -11,7 +12,7 @@ export default function New() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [id,setId] = useState('');
+  const [id, setId] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     authors: [],
@@ -60,16 +61,13 @@ export default function New() {
 
     setIsLoading(true);
     try {
-      const res = await fetch('/api/document/scan', {
-        method: 'POST',
-        body: formData,
+      const res = await axios.post('/api/document/scan', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
-      const data = await res.json();
+      const data = res.data;
       setResponse(data.data);
       setFormData({
         title: data.data.title || '',
@@ -81,7 +79,7 @@ export default function New() {
       setIsModalOpen(true); // Open the modal
     } catch (error) {
       console.error('Error during file upload:', error);
-      toast.error(error.message)
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
       setFiles([]); // Clear the file input after successful submission
@@ -113,17 +111,11 @@ export default function New() {
 
     // Save changes (e.g., send to API)
     try {
-      const res = await fetch(`/api/research/${id}`, {
-        method: 'PATCH',
+      const res = await axios.patch(`/api/research/${id}`, formData, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
       });
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
 
       toast.success('Changes saved successfully!');
       setIsModalOpen(false); // Close the modal after saving

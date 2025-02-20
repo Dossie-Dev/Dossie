@@ -60,17 +60,17 @@ export default function Users() {
         const response = await axios.get("/api/users/?role=user", { withCredentials: true });
         const fetchedUsers = response.data?.data?.data || [];
         setUsers(fetchedUsers);
-
+  
         const companyNameMap: { [key: string]: string } = {};
         for (const user of fetchedUsers) {
           const companyName = await fetchCompanyName(user.company);
-          console.log("companyName",companyName);
+          console.log("companyName", companyName);
           companyNameMap[user.company] = companyName;
         }
         setCompanyNames(companyNameMap);
-
-        console.log("companyNames",companyNames);
-
+  
+        console.log("companyNames", companyNames);
+  
         setError(null);
       } catch (err) {
         console.error("Error fetching users:", err);
@@ -79,7 +79,17 @@ export default function Users() {
         setLoading(false);
       }
     };
-
+  
+    const fetchCompanyName = async (companyId: string) => {
+      try {
+        const response = await axios.get(`/api/companies/${companyId}`, { withCredentials: true });
+        return response.data?.data?.name || 'Unknown Company';
+      } catch (err) {
+        console.error("Error fetching company name:", err);
+        return 'Unknown Company';
+      }
+    };
+  
     fetchUsers();
   }, []);
 

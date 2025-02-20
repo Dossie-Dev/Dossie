@@ -31,8 +31,7 @@ export default function Home() {
       router.push('/home');
       return;
     }
-
-    if (currentUser?.role === "user") {
+    else if (currentUser?.role === "user") {
       router.push('/home');
     } else if (currentUser?.role === "employee") {
       router.push('/emp');

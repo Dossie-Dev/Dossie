@@ -4,7 +4,7 @@ import { useEffect, useState, use } from "react";
 import { jsPDF } from "jspdf";
 import axios from "axios"; // Import axios
 import { toast } from 'react-toastify';
-
+import { useRouter } from 'next/navigation';
 
 interface Document {
   title: string;
@@ -161,6 +161,7 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
 };
 
 export default function DocumentDetails({ params }: { params: Promise<{ documentId: string }> }) {
+  const router = useRouter();
   const { documentId } = use(params);
 
 
@@ -222,11 +223,12 @@ export default function DocumentDetails({ params }: { params: Promise<{ document
       if (response.status !== 200) throw new Error("Failed to delete document");
 
       if (response.data.status === "success") {
-        window.location.href = "/emp/documents";
+        toast.success("Document successfully deleted!");
+        router.push("/emp/documents");
       }
     } catch (error) {
       console.error("Error deleting document:", error);
-      setError("Failed to delete document. Please try again later.");
+      toast.error("Failed to delete document. Please try again later.");
     } finally {
       setIsDeleting(false);
       setIsDeleteModalOpen(false);

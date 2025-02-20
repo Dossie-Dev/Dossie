@@ -77,35 +77,35 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+  
     if (!validateForm()) {
       toast.error("Please fix the errors in the form");
       return;
     }
-
+  
     setLoading(true);
-
+  
     try {
-      const response = await fetch("/api/users/signup", {
-        method: "POST",
+      // Replace fetch with axios
+      const response = await axios.post("/api/users/signup", formData, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message || "Registration failed");
-        return;
+  
+      // Check if the response is successful
+      if (response.data.status === "success") {
+        toast.success("We have sent you an activation code to your email");
+        router.push("/login");
+      } else {
+        toast.error(response.data.message || "Registration failed");
       }
-
-      const data = await response.json();
-      toast.success("We have sent you an activation code to your email");
-      router.push("/login");
     } catch (error) {
       console.error("Error during registration:", error);
-      toast.error("An error occurred. Please try again");
+      toast.error(
+        error.response?.data?.message ||
+          "An error occurred. Please try again"
+      );
     } finally {
       setLoading(false);
     }
