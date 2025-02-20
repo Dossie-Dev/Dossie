@@ -55,7 +55,11 @@ export default function New() {
         setIsLoading(false);
       }
     };
-
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole !== "admin") {
+      router.push("/login");
+    }
     fetchCompanies();
   }, []);
 

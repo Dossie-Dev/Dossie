@@ -57,7 +57,6 @@ export default function Header() {
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
-    fetchUserData();
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -72,6 +71,8 @@ export default function Header() {
       setIsSigningOut(true);
       await axios.get("/api/users/logout", { withCredentials: true });
       localStorage.setItem("isLoggedIn", "false");
+      localStorage.setItem("userRole", "none");
+
       setCurrentUser(null);
       toast.success("You have signed out successfully.");
       router.push("/login");
@@ -100,7 +101,7 @@ export default function Header() {
     >
       <div className="flex items-center justify-between h-20 max-w-screen-xl mx-auto px-4 lg:px-8">
         <div className="flex items-center gap-8">
-          <Link href="/home" className="transition-opacity hover:opacity-80">
+          <Link href="https://dossiescholar.org/" className="transition-opacity hover:opacity-80">
             <Image src={logo} alt="Logo" className="w-48" priority />
           </Link>
         </div>

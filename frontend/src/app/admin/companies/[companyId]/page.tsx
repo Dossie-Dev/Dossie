@@ -10,6 +10,25 @@ import "react-toastify/dist/ReactToastify.css";
 export default function EditCompany() {
   const router = useRouter();
   const params = useParams();
+
+
+
+  useEffect(() => {
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole !== "admin") {
+      router.push("/login");
+    }
+  }, []);
+
+
+
+
+
+
+
+
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",

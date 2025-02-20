@@ -5,6 +5,8 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import debounce from 'lodash/debounce';
+import { useRouter } from "next/navigation";
+
 
 export default function Companies() {
   const [companies, setCompanies] = useState([]);
@@ -15,6 +17,16 @@ export default function Companies() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortType, setSortType] = useState("none");
   const [isSearching, setIsSearching] = useState(false);
+
+    const router = useRouter();
+
+    useEffect(() => {
+      const userRole = localStorage.getItem("userRole");
+      
+      if (userRole !== "admin") {
+        router.push("/login");
+      }
+    }, []);
 
   // Filter and sort companies
   const getFilteredAndSortedCompanies = () => {
@@ -147,7 +159,8 @@ export default function Companies() {
         setLoading(false);
       }
     };
-  
+
+ 
     fetchCompanies();
   }, []);
 

@@ -44,6 +44,12 @@ export default function Profile() {
   });
 
   useEffect(() => {
+
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole !== "admin") {
+      router.push("/login");
+    }
     fetchProfile();
   }, []);
 

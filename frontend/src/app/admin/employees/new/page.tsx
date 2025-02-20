@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
+
 
 interface FormData {
   firstName: string;
@@ -23,6 +25,19 @@ export default function New() {
     role: "employee",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+
+
+
+
+  useEffect(() => {
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole !== "admin") {
+      router.push("/login");
+    }
+  }, []);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

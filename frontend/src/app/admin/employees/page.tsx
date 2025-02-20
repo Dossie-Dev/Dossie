@@ -5,6 +5,9 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import debounce from 'lodash/debounce';
+import { useRouter } from "next/navigation";
+
+
 
 interface Employee {
   id: string;
@@ -27,6 +30,19 @@ export default function Employees() {
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+
+
+
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole !== "admin") {
+      router.push("/login");
+    }
+  }, []);
 
   // Debounced search handler
   const debouncedSearch = useCallback(

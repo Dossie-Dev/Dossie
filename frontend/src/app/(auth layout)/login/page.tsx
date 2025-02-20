@@ -49,9 +49,23 @@ export default function Login() {
         email,
         password,
       });
+      console.log("dataaaaaaaaaaaa",data.user.role);
+
+      // Save user role in local storage
+      localStorage.setItem("userRole", data.user.role);
+
+      if (data.user.role === "user") {
+        router.push('/documents');
+      } else if (data.user.role === "employee") {
+        router.push('/emp');
+      } else if (data.user.role === "admin") {
+        router.push('/admin');
+      } else {
+        router.push('/login');
+      }
 
       toast.success("Welcome back!");
-      router.push("/home");
+
     } catch (error) {
       console.error("Error during login:", error);
       toast.error("Incorrect email or password. Please try again.");
@@ -62,7 +76,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-lg -mt-16">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-lg -mt-32">
         {/* Header */}
         <div className="text-center space-y-2">
           <h2 className="text-4xl font-bold text-gray-900">
@@ -179,10 +193,10 @@ export default function Login() {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`btn btn-primary w-full group relative ${isLoading ? 'btn-disabled' : ''}`}
+            className={`btn btn-primary mx-auto px-16 flex gap-2 items-center justify-center group ${isLoading ? 'btn-disabled' : ''}`}
             disabled={isLoading}
           >
-            <span className="absolute left-4 transition-all duration-300 group-hover:scale-110">
+            <span className="transition-all duration-300 group-hover:scale-110">
               {!isLoading ? (
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
@@ -207,16 +221,7 @@ export default function Login() {
             </span>
           </button>
 
-          {/* Register Link */}
-          <p className="text-center text-sm text-gray-600">
-            Don't have an account?{" "}
-            <Link 
-              href="/register" 
-              className="font-medium text-primary hover:text-primary/80 transition-colors"
-            >
-              Create one now
-            </Link>
-          </p>
+         
         </form>
       </div>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -9,6 +9,21 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function New() {
   const router = useRouter(); 
+
+
+
+  useEffect(() => {
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole !== "admin") {
+      router.push("/login");
+    }
+  }, []);
+
+
+
+
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",

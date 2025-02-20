@@ -4,6 +4,8 @@ import Link from "next/link";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
+
 
 interface User {
   id: string;
@@ -39,6 +41,8 @@ export default function Users() {
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
   const [companyNames, setCompanyNames] = useState<{ [key: string]: string }>({});
+  const router = useRouter();
+
 
   const fetchCompanyName = async (companyId: string) => {
     try {
@@ -89,6 +93,13 @@ export default function Users() {
         return 'Unknown Company';
       }
     };
+
+
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole !== "admin") {
+      router.push("/login");
+    }
   
     fetchUsers();
   }, []);

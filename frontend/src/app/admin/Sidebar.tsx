@@ -14,6 +14,8 @@ const Sidebar = () => {
       // Make API call to logout endpoint
       await axios.get("/api/users/logout", { withCredentials: true });
       localStorage.setItem("isLoggedIn", "false");
+      localStorage.setItem("userRole", "none");
+
       toast.success("You have signed out successfully.");
       router.push("/login");
     } catch (error) {

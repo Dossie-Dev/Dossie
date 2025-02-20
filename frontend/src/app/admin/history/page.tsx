@@ -10,6 +10,10 @@ export default function History() {
   const [error, setError] = useState(null);
   const router = useRouter();
 
+
+
+
+
   useEffect(() => {
     const fetchActivities = async () => {
       setLoading(true);
@@ -29,6 +33,15 @@ export default function History() {
       }
     };
   
+
+
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole !== "admin") {
+      router.push("/login");
+    }
+
+
     fetchActivities();
   }, []);
 

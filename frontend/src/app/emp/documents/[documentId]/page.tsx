@@ -173,6 +173,17 @@ export default function DocumentDetails({ params }: { params: Promise<{ document
   const [isDeleting, setIsDeleting] = useState(false);
 
 
+
+
+  useEffect(() => {
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole !== "employee") {
+        router.push("/login");
+    }
+}, []);
+
+
   const fetchDocument = async () => {
     if (!documentId) return;
 

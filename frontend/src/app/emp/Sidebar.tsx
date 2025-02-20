@@ -1,30 +1,29 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { HomeIcon, UsersIcon, BriefcaseIcon, DocumentIcon, LogoutIcon, UserIcon } from '@heroicons/react/outline';
 
 const Sidebar = () => {
+  const router = useRouter();
   const pathname = usePathname(); // Hook to get the current path
 
   const handleSignOut = async () => {
     try {
       // Make API call to logout endpoint
-      await axios.get("api/users/logout", {
-        withCredentials: true, // Ensures cookies are sent if required
-      });
-      // Clear local data and redirect
+      await axios.get("/api/users/logout", { withCredentials: true });
       localStorage.setItem("isLoggedIn", "false");
+      localStorage.setItem("userRole", "none");
+
       toast.success("You have signed out successfully.");
-      window.location.href = "/login"; // Redirect to login page
+      router.push("/login");
     } catch (error) {
       console.error("Logout failed:", error);
       toast.error("Failed to log out. Please try again.");
     }
   };
-
   const NavItem = ({ href, children, icon }) => {
     const isActive = pathname === href;
     return (

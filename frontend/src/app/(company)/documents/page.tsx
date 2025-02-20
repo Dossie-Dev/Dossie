@@ -2,8 +2,24 @@
 
 import React from "react";
 import CardSkeleton from "@/components/ui/CardSkeleton";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 
 const Documents = () => {
+
+  const router = useRouter();
+
+useEffect(() => {
+  const userRole = localStorage.getItem("userRole");
+  
+  if (userRole !== "user") {
+    router.push("/login");
+  }
+}, []);
+
+
+
   return (
       <div className="pt-8 mx-16 flex flex-col justify-center items-center gap-8">
         <div className="flex gap-2">
