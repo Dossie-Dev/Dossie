@@ -154,6 +154,9 @@ async function extractResearchPaperDataBatch(base64Images) {
 
  exports.scanFolder = catchAsync(async (req, res, next) => {
 
+  // extract the current company id from the request
+  const companyId = req.user.company;
+
   // const sessionUuid = crypto.randomUUID();
   const files = [].concat(req.files.files); // Convert files to an array if it's a single file req.files;
 
@@ -179,6 +182,7 @@ async function extractResearchPaperDataBatch(base64Images) {
     authors: extractedData.authors,
     department: extractedData.department,
     data: extractedData.data,
+    companyId: companyId
   });
 
 
