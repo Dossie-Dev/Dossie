@@ -17,6 +17,13 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
 
+
+  const currentDate = new Date();
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const dateString = currentDate.toLocaleDateString(undefined, options);
+
+
+
   const handleScroll = () => {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     setIsScrolled(scrollTop > 0);
@@ -99,33 +106,20 @@ export default function Header() {
         isScrolled ? "bg-opacity-70 backdrop-blur-lg shadow-sm" : ""
       }`}
     >
-      <div className="flex items-center justify-between h-20 max-w-screen-xl mx-auto px-4 lg:px-8">
-        <div className="flex items-center gap-8">
+      <div className="grid grid-cols-3 gap-4 items-center justify-between h-20  px-8 ">
+       
+        <div className="flex items-center justify-start  gap-8">
           <Link href="https://dossiescholar.org/" className="transition-opacity hover:opacity-80">
             <Image src={logo} alt="Logo" className="w-48" priority />
           </Link>
         </div>
 
-        <nav
-          aria-label="Site Nav"
-          className="items-center justify-center hidden gap-8 text-md font-medium lg:flex lg:w-0 lg:flex-1"
-        >
-          {navLinks.map(({ href, label }) => (
-            <Link key={href} href={href}>
-              <span
-                className={`relative text-gray-800 transition-colors hover:text-primary ${
-                  isActiveRoute(href) 
-                    ? "text-primary after:absolute after:bottom-[-4px] after:left-0 after:h-0.5 after:w-full after:bg-blue-500 after:content-['']" 
-                    : "opacity-75"
-                }`}
-              >
-                {label}
-              </span>
-            </Link>
-          ))}
-        </nav>
 
-        <div className="items-center hidden gap-4 lg:flex">
+     <div className="text-blue-500 font-semibold mx-auto  px-4 w-72 py-2 rounded rounded-2xl bg-blue-100/40 flex items-center justify-center">
+            <h2>{dateString}</h2>
+        </div>
+       
+        <div className="justify-end items-center hidden gap-4 lg:flex">
           {isLoading ? (
             <div className="btn btn-ghost btn-sm loading">Loading...</div>
           ) : currentUser ? (
@@ -192,6 +186,7 @@ export default function Header() {
             </Link>
           )}
         </div>
+
       </div>
     </header>
   );
