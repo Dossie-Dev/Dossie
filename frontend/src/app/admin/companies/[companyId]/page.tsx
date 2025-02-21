@@ -57,7 +57,6 @@ export default function EditCompany() {
 
         if (response.status === 200 && response.data?.data) {
           const company = response.data?.data?.data[0];
-          console.log("dfuhdidusfisdhf",company)
           setFormData({
             name: company.name || "",
             email: company.email || "",

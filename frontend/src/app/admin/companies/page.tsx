@@ -43,7 +43,6 @@ export default function Companies() {
     }
     
     // Apply sort
-    console.log("Sorting with type:", sortType);
     switch (sortType) {
       case "az":
         result.sort((a, b) => {
@@ -75,14 +74,12 @@ export default function Companies() {
         break;
     }
     
-    console.log("Sorted result:", result);
     return result;
   };
 
   // Debounced search handler
   const debouncedSearch = useCallback(
     debounce((value) => {
-      console.log("Search term:", value);
       setSearchTerm(value);
       setIsSearching(false);
     }, 300),
@@ -95,7 +92,6 @@ export default function Companies() {
   };
 
   const handleSort = (type) => {
-    console.log("Sort type selected:", type);
     setSortType(type);
   };
 
@@ -148,7 +144,6 @@ export default function Companies() {
       try {
         const response = await axios.get("/api/company?active=true", { withCredentials: true });
         const fetchedCompanies = response.data?.data?.data || [];
-        console.log("Fetched companies:", fetchedCompanies);
         setCompanies(fetchedCompanies);
         setError(null);
       } catch (err) {

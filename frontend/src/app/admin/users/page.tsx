@@ -47,9 +47,7 @@ export default function Users() {
   const fetchCompanyName = async (companyId: string) => {
     try {
       const response = await axios.get(`/api/company/${companyId}`);
-      console.log("response",response);
       const company = response.data.data.data[0].name;
-      console.log("company",company);
       return company;
     } catch (err) {
       console.error("Error fetching company name:", err);
@@ -68,12 +66,9 @@ export default function Users() {
         const companyNameMap: { [key: string]: string } = {};
         for (const user of fetchedUsers) {
           const companyName = await fetchCompanyName(user.company);
-          console.log("companyName", companyName);
           companyNameMap[user.company] = companyName;
         }
         setCompanyNames(companyNameMap);
-  
-        console.log("companyNames", companyNames);
   
         setError(null);
       } catch (err) {

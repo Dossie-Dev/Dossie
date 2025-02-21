@@ -19,7 +19,6 @@ const ExampleWrapper = () => {
 
   const handleDeleteUser = async () => {
     try {
-      console.log("delete user client");
       dispatch(deleteUserStart());
       const res = await axios.delete(`/api/user/delete/${currentUser._id}`); // Use Axios for DELETE request
       const data = res.data; // Axios stores the response data in `data` property

@@ -49,7 +49,6 @@ export default function Login() {
         email,
         password,
       });
-      console.log("dataaaaaaaaaaaa",data.user.role);
 
       // Save user role in local storage
       localStorage.setItem("userRole", data.user.role);
