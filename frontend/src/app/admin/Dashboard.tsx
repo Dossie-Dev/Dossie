@@ -122,7 +122,7 @@ export default function Dashboard() {
 
   return (
     <div className="p-6 w-full">
-      <h1 className="text-xl  mb-4 text-gray-500">Wellcome, <span className="text-blue-500 font-bold"> {name}!</span> </h1>
+      <h1 className="text-xl  mb-4 text-gray-500">Wellcome, <span className="text-blue-500 font-bold"> {name}</span> </h1>
       {loading ? (
         <div className="space-y-6">
           {/* Skeleton Stats Cards */}
