@@ -52,6 +52,7 @@ export default function Login() {
 
       // Save user role in local storage
       localStorage.setItem("userRole", data.user.role);
+   
 
       if (data.user.role === "user") {
         router.push('/documents');

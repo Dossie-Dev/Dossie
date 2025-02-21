@@ -55,6 +55,7 @@ export default function Header() {
         withCredentials: true,
       });
       setCurrentUser(response.data.data.data[0]);
+      localStorage.setItem("username", response.data.data.data[0].firstName);
     } catch (error) {
       setCurrentUser(null);
     } finally {
@@ -79,6 +80,7 @@ export default function Header() {
       await axios.get("/api/users/logout", { withCredentials: true });
       localStorage.setItem("isLoggedIn", "false");
       localStorage.setItem("userRole", "none");
+      
 
       setCurrentUser(null);
       toast.success("You have signed out successfully.");
