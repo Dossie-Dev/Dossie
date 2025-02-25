@@ -60,7 +60,7 @@ export default function Dashboard() {
     ],
   });
 
-  const name = localStorage.getItem("username");
+  const [name, setName] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,6 +106,11 @@ export default function Dashboard() {
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+    setName(username);
   }, []);
 
   const options = {
