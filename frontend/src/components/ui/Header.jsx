@@ -14,15 +14,13 @@ export default function Header() {
   const [navigationLink, setNavigationLink] = useState("/home");
   const [isLoading, setIsLoading] = useState(true);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-
 
   const currentDate = new Date();
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const dateString = currentDate.toLocaleDateString(undefined, options);
-
-
 
   const handleScroll = () => {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -80,8 +78,6 @@ export default function Header() {
       await axios.get("/api/users/logout", { withCredentials: true });
       localStorage.setItem("isLoggedIn", "false");
       localStorage.setItem("userRole", "none");
-      
-
       setCurrentUser(null);
       toast.success("You have signed out successfully.");
       router.push("/login");
@@ -108,20 +104,26 @@ export default function Header() {
         isScrolled ? "bg-opacity-70 backdrop-blur-lg shadow-sm" : ""
       }`}
     >
-      <div className="grid grid-cols-3 gap-4 items-center justify-between h-20  px-8 ">
-       
-        <div className="flex items-center justify-start  gap-8">
+      <div className="flex items-center justify-between h-20 px-4 sm:px-8">
+        <div className="flex items-center gap-4">
+          <button
+            className="lg:hidden p-2"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
           <Link href="https://dossiescholar.org/" className="transition-opacity hover:opacity-80">
-            <Image src={logo} alt="Logo" className="w-48" priority />
+            <Image src={logo} alt="Logo" className="w-32 sm:w-48" priority />
           </Link>
         </div>
 
-
-     <div className="text-blue-500 font-semibold mx-auto  px-4 w-72 py-2 rounded rounded-2xl bg-blue-100/40 flex items-center justify-center">
-            <h2>{dateString}</h2>
+        <div className="hidden lg:flex text-blue-500 font-semibold mx-auto px-4 w-72 py-2 rounded rounded-2xl bg-blue-100/40 items-center justify-center">
+          <h2>{dateString}</h2>
         </div>
-       
-        <div className="justify-end items-center hidden gap-4 lg:flex">
+
+        <div className="flex items-center gap-4">
           {isLoading ? (
             <div className="btn btn-ghost btn-sm loading">Loading...</div>
           ) : currentUser ? (
@@ -188,8 +190,19 @@ export default function Header() {
             </Link>
           )}
         </div>
-
       </div>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="lg:hidden bg-[#FAFCFF] shadow-lg">
+          <div className="px-4 py-2">
+            <div className="text-blue-500 font-semibold px-4 py-2 rounded rounded-2xl bg-blue-100/40 flex items-center justify-center">
+              <h2>{dateString}</h2>
+            </div>
+          </div>
+          
+        </div>
+      )}
     </header>
   );
 }
