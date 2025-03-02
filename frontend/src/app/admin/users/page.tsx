@@ -1,32 +1,20 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
-
+import { debounce } from "lodash";
 
 interface User {
   id: string;
   fullName: string;
   email: string;
   role: string;
-  company: string; 
+  company: string;
   active: boolean;
   createdAt: string;
-}
-
-interface Company {
-  _id: string;
-  name: string;
-  phoneNumber: number;
-  email: string;
-  address: string;
-  city: string;
-  state: string;
-  createdAt: string;
-  active: boolean;
 }
 
 type SortField = "name" | "email" | "date";
@@ -43,18 +31,7 @@ export default function Users() {
   const [companyNames, setCompanyNames] = useState<{ [key: string]: string }>({});
   const router = useRouter();
 
-
-  const fetchCompanyName = async (companyId: string) => {
-    try {
-      const response = await axios.get(`/api/company/${companyId}`);
-      const company = response.data.data.data[0].name;
-      return company;
-    } catch (err) {
-      console.error("Error fetching company name:", err);
-    }
-    return "Unknown Company"; 
-  };
-
+  // Fetch users and company names
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -62,14 +39,17 @@ export default function Users() {
         const response = await axios.get("/api/users/?role=user", { withCredentials: true });
         const fetchedUsers = response.data?.data?.data || [];
         setUsers(fetchedUsers);
-  
+
+        // Fetch company names for all users
         const companyNameMap: { [key: string]: string } = {};
         for (const user of fetchedUsers) {
-          const companyName = await fetchCompanyName(user.company);
-          companyNameMap[user.company] = companyName;
+          if (!companyNameMap[user.company]) {
+            const companyName = await fetchCompanyName(user.company);
+            companyNameMap[user.company] = companyName;
+          }
         }
         setCompanyNames(companyNameMap);
-  
+
         setError(null);
       } catch (err) {
         console.error("Error fetching users:", err);
@@ -78,63 +58,62 @@ export default function Users() {
         setLoading(false);
       }
     };
-  
+
     const fetchCompanyName = async (companyId: string) => {
       try {
         const response = await axios.get(`/api/companies/${companyId}`, { withCredentials: true });
-        return response.data?.data?.name || 'Unknown Company';
+        return response.data?.data?.name || "Unknown Company";
       } catch (err) {
         console.error("Error fetching company name:", err);
-        return 'Unknown Company';
+        return "Unknown Company";
       }
     };
 
-
     const userRole = localStorage.getItem("userRole");
-    
     if (userRole !== "admin") {
       router.push("/login");
-    }
-  
-    fetchUsers();
-  }, []);
-
-  const sortUsers = (a: User, b: User) => {
-    if (sortField === "name") {
-      return sortOrder === "asc" 
-        ? a.fullName.localeCompare(b.fullName)
-        : b.fullName.localeCompare(a.fullName);
-    } else if (sortField === "email") {
-      return sortOrder === "asc"
-        ? a.email.localeCompare(b.email)
-        : b.email.localeCompare(a.email);
     } else {
-      return sortOrder === "asc"
-        ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      fetchUsers();
     }
-  };
+  }, [router]);
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortOrder("asc");
-    }
-  };
+  // Debounced search term update
+  const handleSearch = useCallback(
+    debounce((value: string) => {
+      setSearchTerm(value);
+    }, 300),
+    []
+  );
 
-  const filteredUsers = users
-    .filter((user) => {
-      const searchValue = searchTerm.toLowerCase();
-      return (
-        user.fullName?.toLowerCase().includes(searchValue) ||
-        user.email?.toLowerCase().includes(searchValue) ||
-        user.role?.toLowerCase().includes(searchValue)
-      );
-    })
-    .sort(sortUsers);
+  // Sort and filter users
+  const filteredUsers = useMemo(() => {
+    return users
+      .filter((user) => {
+        const searchValue = searchTerm.toLowerCase();
+        return (
+          user.fullName?.toLowerCase().includes(searchValue) ||
+          user.email?.toLowerCase().includes(searchValue) ||
+          user.role?.toLowerCase().includes(searchValue)
+        );
+      })
+      .sort((a, b) => {
+        if (sortField === "name") {
+          return sortOrder === "asc"
+            ? a.fullName.localeCompare(b.fullName)
+            : b.fullName.localeCompare(a.fullName);
+        } else if (sortField === "email") {
+          return sortOrder === "asc"
+            ? a.email.localeCompare(b.email)
+            : b.email.localeCompare(a.email);
+        } else {
+          return sortOrder === "asc"
+            ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        }
+      });
+  }, [users, searchTerm, sortField, sortOrder]);
 
+  // Toggle user account status
   const toggleAccountStatus = async (userId: string, currentStatus: boolean) => {
     try {
       setIsUpdating(userId);
@@ -146,9 +125,7 @@ export default function Users() {
         toast.success(`User ${action}d successfully!`);
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
-            user.id === userId
-              ? { ...user, active: !currentStatus }
-              : user
+            user.id === userId ? { ...user, active: !currentStatus } : user
           )
         );
       } else {
@@ -162,6 +139,7 @@ export default function Users() {
     }
   };
 
+  // Loading skeleton
   const LoadingSkeleton = () => (
     <div className="space-y-4">
       {[...Array(5)].map((_, i) => (
@@ -177,11 +155,72 @@ export default function Users() {
     </div>
   );
 
+  // Error alert
+  const ErrorAlert = () => (
+    <div className="alert alert-error">
+      <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>{error}</span>
+      <button onClick={() => window.location.reload()} className="btn btn-sm">
+        Retry
+      </button>
+    </div>
+  );
+
+  // User table
+  const UserTable = () => (
+    <div className="overflow-x-auto">
+      <table className="table table-zebra w-full">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Company</th>
+            <th>Status</th>
+            <th>Created At</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredUsers.map((user, index) => (
+            <tr key={user.id} className="hover">
+              <th>{index + 1}</th>
+              <td className="font-medium">{user.fullName}</td>
+              <td>{user.email}</td>
+              <td>{companyNames[user.company] || "Loading..."}</td>
+              <td>
+                <span className={`badge ${user.active ? "bg-green-500 text-white px-4 py-[0.8rem]" : "text-white bg-red-500 p-4"} gap-2`}>
+                  {user.active ? "Active" : "Inactive"}
+                </span>
+              </td>
+              <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+              <td>
+                <button
+                  className={`btn btn-sm ${
+                    user.active ? "bg-red-500 hover:bg-red-600 text-white" : "bg-green-500 hover:bg-green-600 text-white"
+                  } ${isUpdating === user.id ? "loading" : ""}`}
+                  onClick={() => toggleAccountStatus(user.id, user.active)}
+                  disabled={isUpdating === user.id}
+                >
+                  {isUpdating === user.id ? "Updating..." : user.active ? "Deactivate" : "Activate"}
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
   return (
     <div className="container mx-auto px-4 md:px-8 py-4">
       <div className="breadcrumbs text-sm mb-2">
         <ul>
-          <li><Link href="/admin">Dashboard</Link></li>
+          <li>
+            <Link href="/admin">Dashboard</Link>
+          </li>
           <li className="font-semibold">Users</li>
         </ul>
       </div>
@@ -194,8 +233,7 @@ export default function Users() {
                   type="text"
                   className="grow"
                   placeholder="Search by name, email, or role..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => handleSearch(e.target.value)}
                 />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -224,7 +262,7 @@ export default function Users() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
               </svg>
               Sort
-              {sortField !== 'none' && (
+              {sortField !== "none" && (
                 <div className="badge badge-sm badge-primary ml-2">
                   {sortField} {sortOrder === "asc" ? "↑" : "↓"}
                 </div>
@@ -232,37 +270,19 @@ export default function Users() {
             </div>
             <ul className="dropdown-content menu bg-base-100 rounded-box z-[1] w-56 p-2 shadow-lg">
               <li>
-                <button 
-                  className={sortField === "name" ? "active" : ""}
-                  onClick={() => handleSort("name")}
-                >
-                  Name {sortField === "name" && (sortOrder === "asc" ? "↑" : "↓")}
-                </button>
+                <button onClick={() => handleSort("name")}>Name</button>
               </li>
               <li>
-                <button 
-                  className={sortField === "email" ? "active" : ""}
-                  onClick={() => handleSort("email")}
-                >
-                  Email {sortField === "email" && (sortOrder === "asc" ? "↑" : "↓")}
-                </button>
+                <button onClick={() => handleSort("email")}>Email</button>
               </li>
               <li>
-                <button 
-                  className={sortField === "date" ? "active" : ""}
-                  onClick={() => handleSort("date")}
-                >
-                  Date {sortField === "date" && (sortOrder === "asc" ? "↑" : "↓")}
-                </button>
+                <button onClick={() => handleSort("date")}>Date</button>
               </li>
             </ul>
           </div>
 
           <div className="tooltip tooltip-bottom" data-tip="Add new user">
-            <Link
-              href="/admin/users/new"
-              className="btn btn-primary"
-            >
+            <Link href="/admin/users/new" className="btn btn-primary">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
@@ -278,13 +298,7 @@ export default function Users() {
             <LoadingSkeleton />
           </div>
         ) : error ? (
-          <div className="alert alert-error">
-            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>{error}</span>
-            <button onClick={() => window.location.reload()} className="btn btn-sm">Retry</button>
-          </div>
+          <ErrorAlert />
         ) : filteredUsers.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8 text-gray-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 mb-4 opacity-50">
@@ -298,59 +312,7 @@ export default function Users() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="table table-zebra w-full">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Full Name</th>
-                  <th>Email</th>
-                  <th>Company</th>
-                  <th>Status</th>
-                  <th>Created At</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredUsers.map((user, index) => (
-                  <tr key={user.id} className="hover">
-                    <th>{index + 1}</th>
-                    <td className="font-medium">{user.fullName}</td>
-                    <td>{user.email}</td>
-                    <td>{companyNames[user.company] || "Loading..."}</td>
-                    <td>
-                      <span className={`badge ${user.active ? 'bg-green-500 text-white px-4 py-[0.8rem]' : 'text-white bg-red-500 p-4'} gap-2`}>
-                        {user.active ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                          </svg>
-                        )}
-                        {user.active ? "Active" : "Inactive"}
-                      </span>
-                    </td>
-                    <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                    <td>
-                      <div className="tooltip" data-tip={`${user.active ? 'Deactivate' : 'Activate'} user`}> 
-                        <button
-                          className={`btn btn-sm ${
-                            user.active ? "bg-red-500 hover:bg-red-600 text-white" : "bg-green-500 hover:bg-green-600 text-white"
-                          } ${isUpdating === user.id ? "loading" : ""}`}
-                          onClick={() => toggleAccountStatus(user.id, user.active)}
-                          disabled={isUpdating === user.id}
-                        >
-                          {isUpdating === user.id ? "Updating..." : user.active ? "Deactivate" : "Activate"}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <UserTable />
         )}
       </div>
     </div>

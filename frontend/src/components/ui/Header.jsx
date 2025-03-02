@@ -44,6 +44,7 @@ export default function Header() {
           break;
       }
     }
+   
   }, [currentUser]);
 
   const fetchUserData = async () => {
@@ -56,6 +57,8 @@ export default function Header() {
       localStorage.setItem("username", response.data.data.data[0].firstName);
     } catch (error) {
       setCurrentUser(null);
+      router.push("/login");
+
     } finally {
       setIsLoading(false);
     }
