@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 export default function New() {
   const router = useRouter();
@@ -11,7 +12,7 @@ export default function New() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [id,setId] = useState('');
+  const [id, setId] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     authors: [],
@@ -20,29 +21,19 @@ export default function New() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-
-
-
-
   useEffect(() => {
     const userRole = localStorage.getItem("userRole");
-    
     if (userRole !== "employee") {
-        router.push("/login");
+      router.push("/login");
     }
-}, []);
+  }, []);
 
-
-
-
-  // Handle file selection
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setFiles(Array.from(event.target.files));
     }
   };
 
-  // Handle drag-and-drop
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragging(true);
@@ -60,7 +51,6 @@ export default function New() {
     }
   };
 
-  // Handle form submission
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (files.length === 0) {
@@ -75,16 +65,13 @@ export default function New() {
 
     setIsLoading(true);
     try {
-      const res = await fetch('/api/document/scan', {
-        method: 'POST',
-        body: formData,
+      const res = await axios.post('/api/document/scan', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
-      const data = await res.json();
+      const data = res.data;
       setResponse(data.data);
       setFormData({
         title: data.data.title || '',
@@ -93,17 +80,16 @@ export default function New() {
         data: data.data.data || '',
       });
       setId(data.data._id);
-      setIsModalOpen(true); // Open the modal
+      document.getElementById('my_modal_3').showModal()
     } catch (error) {
       console.error('Error during file upload:', error);
-      toast.error(error.message)
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
-      setFiles([]); // Clear the file input after successful submission
+      setFiles([]);
     }
   };
 
-  // Handle form field changes
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setFormData((prev) => ({
@@ -112,9 +98,7 @@ export default function New() {
     }));
   };
 
-  // Handle saving edited data
   const handleSaveChanges = async () => {
-    // Validate form data
     const newErrors: Record<string, string> = {};
     if (!formData.title) newErrors.title = 'Title is required';
     if (!formData.authors.length) newErrors.authors = 'At least one author is required';
@@ -126,23 +110,16 @@ export default function New() {
       return;
     }
 
-    // Save changes (e.g., send to API)
     try {
-      const res = await fetch(`/api/research/${id}`, {
-        method: 'PATCH',
+      const res = await axios.patch(`/api/research/${id}`, formData, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
       });
 
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
       toast.success('Changes saved successfully!');
-      setIsModalOpen(false); // Close the modal after saving
-      document.getElementById('my_modal_3')?.close(); // Ensure modal closes
+      setIsModalOpen(false);
+      document.getElementById('my_modal_3')?.close();
       router.push('/emp/documents');
     } catch (error) {
       console.error('Error saving changes:', error);
@@ -154,7 +131,6 @@ export default function New() {
     <>
       <div className="min-h-screen flex items-start justify-center p-4 mt-6 mx-auto">
         <div className="bg-white rounded-lg shadow-md w-full p-6">
-          {/* Drag-and-drop and file upload section */}
           <div className="flex flex-col gap-2 items-center justify-center text-center">
             <svg xmlns="http://www.w3.org/2000/svg" width={96} height={96} viewBox="0 0 24 24">
               <g fill="none" stroke="currentColor" strokeWidth={1.5}>
@@ -228,7 +204,7 @@ export default function New() {
             {formData && (
               <button
                 className="bg-white mx-auto w-56 text-blue-500 border border-blue-400 px-4 py-2 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition flex justify-center items-center"
-                onClick={()=>document.getElementById('my_modal_3').showModal()}
+                onClick={() => document.getElementById('my_modal_3').showModal()}
               >
                 Preview
               </button>
@@ -262,16 +238,13 @@ export default function New() {
         </div>
       </div>
 
-      {/* Modal for Previewing and Editing Extracted Data */}
-        <dialog id="my_modal_3" className="modal">
-        <div className="modal-box">            {/* Header */}
-            <div className="px-8 py-6 bg-blue-500 text-white">
-              <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">Preview Extracted Data</h1>
-
-                <form method="dialog">
+      <dialog id="my_modal_3" className="modal">
+        <div className="modal-box w-[600px]">
+          <div className="px-8 py-6 bg-blue-500 text-white">
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold">Preview Extracted Data</h1>
+              <form method="dialog">
                 <button
-                  // onClick={() => setIsModalOpen(false)}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -280,88 +253,79 @@ export default function New() {
                   Close
                 </button>
               </form>
-              </div>
             </div>
-
-            {/* Form Content */}
-            <div className="p-8">
-              <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleSaveChanges(); }}>
-                {/* Title */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    className={`input input-bordered w-full ${errors.title ? 'input-error' : ''}`}
-                  />
-                  {errors.title && <p className="mt-1 text-sm text-error">{errors.title}</p>}
-                </div>
-
-                {/* Authors */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Authors</label>
-                  <input
-                    type="text"
-                    name="authors"
-                    value={formData.authors.join(', ')}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        authors: e.target.value.split(',').map((author) => author.trim()),
-                      }))
-                    }
-                    className={`input input-bordered w-full ${errors.authors ? 'input-error' : ''}`}
-                  />
-                  {errors.authors && <p className="mt-1 text-sm text-error">{errors.authors}</p>}
-                </div>
-
-                {/* Department */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
-                  <input
-                    type="text"
-                    name="department"
-                    value={formData.department}
-                    onChange={handleChange}
-                    className={`input input-bordered w-full ${errors.department ? 'input-error' : ''}`}
-                  />
-                  {errors.department && <p className="mt-1 text-sm text-error">{errors.department}</p>}
-                </div>
-
-                {/* Data */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Data</label>
-                  <textarea
-                    name="data"
-                    value={formData.data}
-                    onChange={handleChange}
-                    className={`textarea textarea-bordered w-full ${errors.data ? 'textarea-error' : ''}`}
-                    rows={5}
-                  />
-                  {errors.data && <p className="mt-1 text-sm text-error">{errors.data}</p>}
-                </div>
-
-                {/* Form Actions */}
-                <div className="flex items-center justify-end gap-4 pt-4">
-               
-                  <button
-                    type="submit"
-                    className="flex items-center gap-2 px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-500/90 transition-colors"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                    Save Changes
-                  </button>
-                </div>
-              </form>
-
           </div>
-          </div>
-          </dialog>
 
+          <div className="p-8">
+            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleSaveChanges(); }}>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  className={`input input-bordered w-full ${errors.title ? 'input-error' : ''}`}
+                />
+                {errors.title && <p className="mt-1 text-sm text-error">{errors.title}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Authors</label>
+                <input
+                  type="text"
+                  name="authors"
+                  value={formData.authors.join(', ')}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      authors: e.target.value.split(',').map((author) => author.trim()),
+                    }))
+                  }
+                  className={`input input-bordered w-full ${errors.authors ? 'input-error' : ''}`}
+                />
+                {errors.authors && <p className="mt-1 text-sm text-error">{errors.authors}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                <input
+                  type="text"
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  className={`input input-bordered w-full ${errors.department ? 'input-error' : ''}`}
+                />
+                {errors.department && <p className="mt-1 text-sm text-error">{errors.department}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Data</label>
+                <textarea
+                  name="data"
+                  value={formData.data}
+                  onChange={handleChange}
+                  className={`textarea textarea-bordered w-full ${errors.data ? 'textarea-error' : ''}`}
+                  rows={5}
+                />
+                {errors.data && <p className="mt-1 text-sm text-error">{errors.data}</p>}
+              </div>
+
+              <div className="flex items-center justify-end gap-4 pt-4">
+                <button
+                  type="submit"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-500/90 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </dialog>
     </>
   );
 }
