@@ -1,0 +1,21 @@
+extends baseEmail
+
+block content
+  p Hi #{firstName},
+  p You have been registered to the <strong>Dossie Platform</strong> as an <strong>Employee</strong>. Below are your login details:
+  p 
+    | <strong>email: </strong> #{email}
+    br
+    | <strong>Temporary Password:</strong> #{password}
+  p Please log in to the platform and change your password immediately for security reasons.
+  table.btn.btn-primary(role='presentation', border='0', cellpadding='0', cellspacing='0')
+    tbody
+      tr
+        td(align='left')
+          table(role='presentation', border='0', cellpadding='0', cellspacing='0')
+            tbody
+              tr
+                td
+                  a(href=`${url}`, target='_blank') Go to Dossie Platform
+  p If you have any questions or encounter issues, please contact support at [Support Email].
+  p Welcome to the team!

@@ -15,20 +15,6 @@ class APIFeatures {
     let queryStr = JSON.stringify(newQuery);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     queryStr = JSON.parse(queryStr);
-    for (let i in queryStr) {
-      // code to be removed
-      // queryStr[i] = new RegExp([queryStr[i]],"i");
-      // Convert boolean strings to actual boolean values
-      if (
-        queryStr[i].toLowerCase() == "true" ||
-        queryStr[i].toLowerCase() == "false"
-      ) {
-        queryStr[i] = JSON.parse(queryStr[i].toLowerCase());
-      } else {
-        // Convert other string values to case-insensitive regular expressions
-        queryStr[i] = new RegExp(queryStr[i], "i");
-      }
-    }
     this.query = this.query.find(queryStr);
 
     return this;
@@ -60,47 +46,28 @@ class APIFeatures {
 
     return this;
   }
-  populate() {
-    let populated = [
-      { path: "questions", options: { strictPopulate: false } },
-      { path: "invigilatorID", options: { strictPopulate: false } },
-      { path: "questions", options: { strictPopulate: false } },
-      { path: "adminUser", options: { strictPopulate: false } },
-      { path: "user", options: { strictPopulate: false } },
-      { path: "questionID", options: { strictPopulate: false } },
-      // { path: "adminOf", options: { strictPopulate: false } },
-      { path: "organizationsFollowed", options: { strictPopulate: false } },
-      { path: "organizationsJoined", options: { strictPopulate: false } },
-      { path: "follower", options: { strictPopulate: false } },
-      { path: "organization", options: { strictPopulate: false } },
-      { path: "createdBy", options: { strictPopulate: false } },
-      { path: "userAnswers", options: { strictPopulate: false } },
-      { path: "user", options: { strictPopulate: false } },
-      // { path: "exam", options: { strictPopulate: false } },
-
-      // for user Answer
-      { path: "userId", options: { strictPopulate: false } },
-      { path: "examId", options: { strictPopulate: false } },
-    ];
+populate() {
+    let populated = [{ path: "user", options: { strictPopulate: false } }]; // Fix path
 
     let populateObj = [];
-    if (this.queryString.fields) {
-      const result = this.queryString.fields.split(",").map((value) => {
-        return value.trim();
-      });
 
-      populateObj = populated.filter((value) => {
-        if (result.includes(`${value.path.split(".")[0]}`)) {
-          return true;
-        }
-        return false;
-      });
+    if (this.queryString.fields) {
+        const result = this.queryString.fields.split(",").map(value => value.trim());
+
+        populateObj = populated.filter(value => result.includes(value.path));
     } else {
-      populateObj = populated;
+        populateObj = populated;
     }
 
-    this.query = this.query.populate(populateObj);
+    // Ensure populateObj is applied correctly
+    if (populateObj.length > 0) {
+        populateObj.forEach(populateField => {
+            this.query = this.query.populate(populateField);
+        });
+    }
+
     return this;
-  }
+}
+ 
 }
 module.exports = APIFeatures;

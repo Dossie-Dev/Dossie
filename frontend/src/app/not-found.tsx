@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const NotFound: React.FC = () => {
   return (
-    <section className="relative z-10 bg-primary opacity-75 py-[120px]">
+    <section className="relative z-10 bg-blue-500 opacity-75 py-[120px]">
       <div className="container mx-auto">
         <div className="mx-4 flex">
           <div className="w-full px-4">
