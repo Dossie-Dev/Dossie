@@ -6,7 +6,7 @@ const ResearchPaperSchema = new mongoose.Schema({
   department: { type: String, default: "Unknown Department" },
   data: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
-  companyId: { type: mongoose.Schema.ObjectId, ref: "Company", required: true },
+  companyId: { type: mongoose.Schema.ObjectId, ref: "Company", required: false },
 });
 
 const ResearchPaper = mongoose.model("ResearchPaper", ResearchPaperSchema);
