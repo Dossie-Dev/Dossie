@@ -80,7 +80,7 @@ export default function New() {
         data: data.data.data || '',
       });
       setId(data.data._id);
-      document.getElementById('my_modal_3').showModal()
+      setIsModalOpen(true);
     } catch (error) {
       console.error('Error during file upload:', error);
       toast.error(error.message);
@@ -119,7 +119,6 @@ export default function New() {
 
       toast.success('Changes saved successfully!');
       setIsModalOpen(false);
-      document.getElementById('my_modal_3')?.close();
       router.push('/emp/documents');
     } catch (error) {
       console.error('Error saving changes:', error);
@@ -204,7 +203,7 @@ export default function New() {
             {formData && (
               <button
                 className="bg-white mx-auto w-56 text-blue-500 border border-blue-400 px-4 py-2 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition flex justify-center items-center"
-                onClick={() => document.getElementById('my_modal_3').showModal()}
+                onClick={() => setIsModalOpen(true)}
               >
                 Preview
               </button>
@@ -238,94 +237,61 @@ export default function New() {
         </div>
       </div>
 
-      <dialog id="my_modal_3" className="modal">
-        <div className="modal-box w-[800px]">
-          <div className="px-8 py-6 bg-blue-500 text-white">
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold">Preview Extracted Data</h1>
-              <form method="dialog">
-                <button
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  Close
-                </button>
-              </form>
-            </div>
-          </div>
-
-          <div className="p-8">
-            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleSaveChanges(); }}>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white p-6 shadow-lg w-[800px] rounded-[0.5rem]">
+            <h2 className="text-lg font-bold mb-2 text-blue-500">Preview Document</h2>
+            <hr />
+            <form onSubmit={(e) => { e.preventDefault(); handleSaveChanges(); }} className="flex flex-col gap-4 mt-8">
+              <div className="flex flex-col gap-2">
+                <label className="block text-sm font-medium text-gray-700">Title</label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  className={`input input-bordered w-full ${errors.title ? 'input-error' : ''}`}
+                  className="input input-bordered w-full"
                 />
-                {errors.title && <p className="mt-1 text-sm text-error">{errors.title}</p>}
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Authors</label>
-                <input
-                  type="text"
-                  name="authors"
-                  value={formData.authors.join(', ')}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      authors: e.target.value.split(',').map((author) => author.trim()),
-                    }))
-                  }
-                  className={`input input-bordered w-full ${errors.authors ? 'input-error' : ''}`}
-                />
-                {errors.authors && <p className="mt-1 text-sm text-error">{errors.authors}</p>}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+              <div className="flex flex-col gap-2">
+                <label className="block text-sm font-medium text-gray-700">Department</label>
                 <input
                   type="text"
                   name="department"
                   value={formData.department}
                   onChange={handleChange}
-                  className={`input input-bordered w-full ${errors.department ? 'input-error' : ''}`}
+                  className="input input-bordered w-full"
                 />
-                {errors.department && <p className="mt-1 text-sm text-error">{errors.department}</p>}
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Data</label>
+              <div className="flex flex-col gap-2">
+                <label className="block text-sm font-medium text-gray-700">Content</label>
                 <textarea
                   name="data"
                   value={formData.data}
                   onChange={handleChange}
-                  className={`textarea textarea-bordered w-full ${errors.data ? 'textarea-error' : ''}`}
+                  className="textarea textarea-bordered w-full"
                   rows={5}
                 />
-                {errors.data && <p className="mt-1 text-sm text-error">{errors.data}</p>}
               </div>
-
-              <div className="flex items-center justify-end gap-4 pt-4">
+              <div className="flex justify-end gap-4 mt-4">
+                <button
+                  type="button"
+                  className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 transition"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancel
+                </button>
                 <button
                   type="submit"
-                  className="flex items-center gap-2 px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-500/90 transition-colors"
+                  className="bg-blue-500 px-4 py-2 text-white rounded hover:bg-blue-600 transition"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
                   Save Changes
                 </button>
               </div>
             </form>
           </div>
         </div>
-      </dialog>
+      )}
     </>
   );
 }

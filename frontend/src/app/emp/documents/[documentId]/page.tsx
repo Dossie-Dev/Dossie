@@ -40,51 +40,69 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-lg font-bold mb-4">Confirm Deletion</h2>
-        <p className="mb-6">Are you sure you want to delete this document? This action is not reversible.</p>
-        <div className="flex justify-end gap-4">
-          <button
-            className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 transition"
-            onClick={onClose}
-            disabled={isLoading}
-          >
-            Cancel
-          </button>
-          <button
-            className="bg-red-500 px-4 py-2 text-white rounded hover:bg-red-600 transition flex items-center gap-2"
-            onClick={onConfirm}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <svg
-                className="animate-spin h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-            ) : (
-              "Delete"
-            )}
-          </button>
-        </div>
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 backdrop-blur-sm">
+    <div className="bg-white p-8 rounded-xl shadow-2xl w-96 transform transition-all duration-300 ease-in-out scale-95 hover:scale-100">
+      <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6 text-red-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+        Confirm Deletion
+      </h2>
+      <p className="text-gray-600 mb-6">
+        Are you sure you want to delete this document? This action cannot be undone.
+      </p>
+      <div className="flex justify-end gap-4">
+        <button
+          className="px-6 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-all duration-200 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          onClick={onClose}
+          disabled={isLoading}
+        >
+          Cancel
+        </button>
+        <button
+          className="px-6 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-all duration-200 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          onClick={onConfirm}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <svg
+              className="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          ) : (
+            "Delete"
+          )}
+        </button>
       </div>
     </div>
+  </div>
   );
 };
 
@@ -106,50 +124,87 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-lg font-bold mb-4">Edit Document</h2>
-        <form onSubmit={(e) => { e.preventDefault(); onSave(formData); }}>          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Title</label>
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 backdrop-blur-sm">
+      <div className="bg-white p-8 rounded-xl shadow-2xl w-[800px] transform transition-all duration-300 ease-in-out">
+        <h2 className="text-2xl font-bold text-blue-500 mb-4 flex items-center gap-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 text-blue-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+            />
+          </svg>
+          Edit Document
+        </h2>
+        <hr className="border-gray-200 mb-6" />
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSave(formData);
+          }}
+          className="flex flex-col gap-6"
+        >
+          <div className="flex flex-col gap-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Title
+            </label>
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="input input-bordered w-full"
+              className="input input-bordered w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              placeholder="Enter document title"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Department</label>
+
+          <div className="flex flex-col gap-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Department
+            </label>
             <input
               type="text"
               name="department"
               value={formData.department}
               onChange={handleChange}
-              className="input input-bordered w-full"
+              className="input input-bordered w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              placeholder="Enter department"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Content</label>
+
+          <div className="flex flex-col gap-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Content
+            </label>
             <textarea
               name="data"
               value={formData.data}
               onChange={handleChange}
-              className="textarea textarea-bordered w-full"
+              className="textarea textarea-bordered w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               rows={5}
+              placeholder="Enter document content"
             />
           </div>
-          <div className="flex justify-end gap-4">
+
+          <div className="flex justify-end gap-4 mt-6">
             <button
               type="button"
-              className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 transition"
+              className="px-6 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-all duration-200 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
               onClick={onClose}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-blue-500 px-4 py-2 text-white rounded hover:bg-blue-600 transition"
+              className="px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Save Changes
             </button>
@@ -159,6 +214,7 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
     </div>
   );
 };
+
 
 export default function DocumentDetails({ params }: { params: Promise<{ documentId: string }> }) {
   const router = useRouter();
