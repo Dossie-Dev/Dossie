@@ -239,7 +239,7 @@ export default function New() {
       </div>
 
       <dialog id="my_modal_3" className="modal">
-        <div className="modal-box w-[600px]">
+        <div className="modal-box w-[800px]">
           <div className="px-8 py-6 bg-blue-500 text-white">
             <div className="flex items-center justify-between">
               <h1 className="text-2xl font-bold">Preview Extracted Data</h1>
