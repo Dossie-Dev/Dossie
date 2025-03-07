@@ -7,12 +7,25 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import { debounce } from "lodash";
 
+interface Company {
+  _id: string;
+  name: string;
+  phoneNumber: number | null;
+  email: string;
+  address: string;
+  city: string;
+  state: string;
+  createdAt: string;
+  active: boolean;
+  __v: number;
+}
+
 interface User {
   id: string;
   fullName: string;
   email: string;
   role: string;
-  company: string;
+  company: Company;
   active: boolean;
   createdAt: string;
 }
@@ -28,10 +41,9 @@ export default function Users() {
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
-  const [companyNames, setCompanyNames] = useState<{ [key: string]: string }>({});
   const router = useRouter();
 
-  // Fetch users and company names
+  // Fetch users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -39,33 +51,12 @@ export default function Users() {
         const response = await axios.get("/api/users/?role=user", { withCredentials: true });
         const fetchedUsers = response.data?.data?.data || [];
         setUsers(fetchedUsers);
-
-        // Fetch company names for all users
-        const companyNameMap: { [key: string]: string } = {};
-        for (const user of fetchedUsers) {
-          if (!companyNameMap[user.company]) {
-            const companyName = await fetchCompanyName(user.company);
-            companyNameMap[user.company] = companyName;
-          }
-        }
-        setCompanyNames(companyNameMap);
-
         setError(null);
       } catch (err) {
         console.error("Error fetching users:", err);
         setError("Failed to fetch users. Please try again later.");
       } finally {
         setLoading(false);
-      }
-    };
-
-    const fetchCompanyName = async (companyId: string) => {
-      try {
-        const response = await axios.get(`/api/companies/${companyId}`, { withCredentials: true });
-        return response.data?.data?.name || "Unknown Company";
-      } catch (err) {
-        console.error("Error fetching company name:", err);
-        return "Unknown Company";
       }
     };
 
@@ -139,6 +130,13 @@ export default function Users() {
     }
   };
 
+  // Handle sorting of users
+  const handleSort = (field: SortField) => {
+    const newSortOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(newSortOrder);
+  };
+
   // Loading skeleton
   const LoadingSkeleton = () => (
     <div className="space-y-4">
@@ -189,7 +187,7 @@ export default function Users() {
               <th>{index + 1}</th>
               <td className="font-medium">{user.fullName}</td>
               <td>{user.email}</td>
-              <td>{companyNames[user.company] || "Loading..."}</td>
+              <td>{user.company.name}</td>
               <td>
                 <span className={`badge ${user.active ? "bg-green-500 text-white px-4 py-[0.8rem]" : "text-white bg-red-500 p-4"} gap-2`}>
                   {user.active ? "Active" : "Inactive"}
