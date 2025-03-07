@@ -46,28 +46,32 @@ class APIFeatures {
 
     return this;
   }
-populate() {
-    let populated = [{ path: "user", options: { strictPopulate: false } }]; // Fix path
+  populate() {
+    let populated = [
+      { path: "user", options: { strictPopulate: false } },
+      { path: "company", option: { strictPopulate: false } },
+    ]; // Fix path
 
     let populateObj = [];
 
     if (this.queryString.fields) {
-        const result = this.queryString.fields.split(",").map(value => value.trim());
+      const result = this.queryString.fields
+        .split(",")
+        .map((value) => value.trim());
 
-        populateObj = populated.filter(value => result.includes(value.path));
+      populateObj = populated.filter((value) => result.includes(value.path));
     } else {
-        populateObj = populated;
+      populateObj = populated;
     }
 
     // Ensure populateObj is applied correctly
     if (populateObj.length > 0) {
-        populateObj.forEach(populateField => {
-            this.query = this.query.populate(populateField);
-        });
+      populateObj.forEach((populateField) => {
+        this.query = this.query.populate(populateField);
+      });
     }
 
     return this;
-}
- 
+  }
 }
 module.exports = APIFeatures;
