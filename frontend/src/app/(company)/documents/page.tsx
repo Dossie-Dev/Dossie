@@ -116,7 +116,7 @@ export default function Documents() {
 
       {/* Search and Filters */}
       <div className="mb-8">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 py-4">
+        <div className="flex flex-row justify-between items-center gap-4 py-4">
           <div className="w-full md:flex-1">
             <label className="input input-bordered flex items-center gap-2 w-full">
               <input
@@ -147,7 +147,7 @@ export default function Documents() {
           <div className="flex gap-2">
             <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="btn btn-outline btn-primary px-8">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 hidden md:block" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3z" />
                 </svg>
                 Sort
@@ -231,75 +231,75 @@ export default function Documents() {
       {!isLoading && !error && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDocuments.map((doc, index) => {
-            const uniqueKey = doc._id;
-            const isLastDocument = filteredDocuments.length === index + 1;
+  const uniqueKey = `${doc._id}-${doc.createdAt}`; // Combine _id and createdAt
+  const isLastDocument = filteredDocuments.length === index + 1;
 
-            return (
-              <Link
-                key={uniqueKey}
-                className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                href={`/documents/${doc._id}`}
-                ref={isLastDocument ? lastDocumentElementRef : null}
-              >
-                <div className="p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4 group-hover:text-blue-600">
-                    {doc.title}
-                  </h2>
-                  <div className="flex items-center text-sm text-gray-600 mb-2">
-                    <svg
-                      className="w-4 h-4 mr-2 text-blue-500"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                      />
-                    </svg>
-                    <span>{doc.authors.join(", ")}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600 mb-2">
-                    <svg
-                      className="w-4 h-4 mr-2 text-blue-500"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"
-                      />
-                    </svg>
-                    <span>{doc.department}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <svg
-                      className="w-4 h-4 mr-2 text-blue-500"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
-                      />
-                    </svg>
-                    <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+  return (
+    <Link
+      key={uniqueKey} // Use the unique key
+      className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+      href={`/emp/documents/${doc._id}`}
+      ref={isLastDocument ? lastDocumentElementRef : null}
+    >
+      <div className="p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4 group-hover:text-blue-600">
+          {doc.title}
+        </h2>
+        <div className="flex items-center text-sm text-gray-600 mb-2">
+          <svg
+            className="w-4 h-4 mr-2 text-blue-500"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+            />
+          </svg>
+          <span>{doc.authors.join(", ")}</span>
+        </div>
+        <div className="flex items-center text-sm text-gray-600 mb-2">
+          <svg
+            className="w-4 h-4 mr-2 text-blue-500"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"
+            />
+          </svg>
+          <span>{doc.department}</span>
+        </div>
+        <div className="flex items-center text-sm text-gray-600">
+          <svg
+            className="w-4 h-4 mr-2 text-blue-500"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+            />
+          </svg>
+          <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
+        </div>
+      </div>
+    </Link>
+  );
+})}
         </div>
       )}
 

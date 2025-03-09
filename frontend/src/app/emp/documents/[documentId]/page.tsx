@@ -6,12 +6,19 @@ import axios from "axios"; // Import axios
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 
+
+interface Company {
+  _id: string;
+  name: string;
+}
+
 interface Document {
   title: string;
   authors: string[];
   department: string;
   data: string;
   createdAt: string;
+  companyId?: string;
 }
 
 const Breadcrumbs = ({ document }: { document: Document | null }) => {
@@ -111,7 +118,37 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
     title: document.title,
     department: document.department,
     data: document.data,
+    companyId: document.companyId || "",
   });
+
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
+  const [selectedCompanyName, setSelectedCompanyName] = useState("Select Company");
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      setIsLoadingCompanies(true);
+      try {
+        const response = await axios.get("/api/company?active=true");
+        const companiesData = response.data?.data?.data || [];
+        if (Array.isArray(companiesData)) {
+          setCompanies(companiesData);
+        } else {
+          console.error("Companies data is not an array:", companiesData);
+          toast.error("Error loading companies data");
+          setCompanies([]);
+        }
+      } catch (error) {
+        toast.error("Failed to fetch companies");
+        console.error("Error fetching companies:", error);
+        setCompanies([]);
+      } finally {
+        setIsLoadingCompanies(false);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -119,6 +156,19 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleCompanySelect = (company: Company) => {
+    if (!company._id) {
+      toast.error("Invalid company selection");
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      companyId: company._id,
+    }));
+    setSelectedCompanyName(company.name);
   };
 
   if (!isOpen) return null;
@@ -153,7 +203,7 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
           className="flex flex-col gap-6"
         >
           <div className="flex flex-col gap-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-blue-500">
               Title
             </label>
             <input
@@ -167,7 +217,7 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-blue-500">
               Department
             </label>
             <input
@@ -180,8 +230,60 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
             />
           </div>
 
+
+          <div className="form-control w-full">
+          <label className="block text-sm font-medium text-blue-500 mb-2 ">
+              Organization
+            </label>
+            <div className="dropdown w-full">
+              <div 
+                tabIndex={0} 
+                role="button" 
+                className={`input input-bordered w-full flex items-center justify-between ${
+                  formData.companyId ? 'text-base-content' : 'text-gray-400'
+                }`}
+              >
+                {isLoadingCompanies ? (
+                  <span className="loading loading-spinner loading-sm"></span>
+                ) : (
+                  selectedCompanyName
+                )}
+                <svg 
+                  className="h-4 w-4 ml-2" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+              <ul className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow mt-2 max-h-60 overflow-auto">
+                {isLoadingCompanies ? (
+                  <li className="text-center py-2">
+                    <span className="loading loading-spinner loading-sm"></span>
+                  </li>
+                ) : companies.length > 0 ? (
+                  companies.map((company) => (
+                    <li key={company._id}>
+                      <button 
+                        type="button"
+                        className="text-primary hover:bg-blue-500 hover:text-white"
+                        onClick={() => handleCompanySelect(company)}
+                      >
+                        {company.name}
+                      </button>
+                    </li>
+                  ))
+                ) : (
+                  <li><span className="text-gray-400 p-2">No companies available</span></li>
+                )}
+              </ul>
+            </div>
+          </div>
+
+
           <div className="flex flex-col gap-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-blue-500">
               Content
             </label>
             <textarea
@@ -193,6 +295,8 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
               placeholder="Enter document content"
             />
           </div>
+
+         
 
           <div className="flex justify-end gap-4 mt-6">
             <button
@@ -274,8 +378,8 @@ export default function DocumentDetails({ params }: { params: Promise<{ document
       if (response.status !== 200) throw new Error("Failed to update document");
   
       setDocument(response.data.data);
-      toast.success("Document successfully edited!"); // Add this line
-      fetchDocument()
+      toast.success("Document successfully edited!");
+      fetchDocument();
       setIsEditModalOpen(false);
     } catch (error) {
       console.error("Error updating document:", error);
@@ -352,7 +456,7 @@ export default function DocumentDetails({ params }: { params: Promise<{ document
   if (!document && !isLoading) return <div>No document found.</div>;
 
   return (
-    <div className="container mx-auto p-4 lg:p-12">
+    <div className="container mx-auto p-4 lg:p-12 w-10/12 ">
       <Breadcrumbs document={document} />
       {isLoading ? (
         <div className="animate-pulse space-y-4">

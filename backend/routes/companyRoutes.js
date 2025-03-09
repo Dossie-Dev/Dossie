@@ -10,12 +10,12 @@ router.use(protect);
 
 router
     .route("/")
-    .get(restrictTo("admin", "user"), getAllCompanies)
+    .get(restrictTo("admin", "user","employee"), getAllCompanies)
     .post(restrictTo("admin"), createCompany);
 
 
 router.route("/:id")
-    .get(restrictTo("admin", "user"), getOneCompany)
+    .get(restrictTo("admin","employee", "user"), getOneCompany)
     .patch(restrictTo("admin"), updateOneCompany)
     .delete(restrictTo("admin"), deleteOneCompany);
 
