@@ -238,7 +238,7 @@ export default function Documents() {
     <Link
       key={uniqueKey} // Use the unique key
       className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-      href={`/emp/documents/${doc._id}`}
+      href={`/documents/${doc._id}`}
       ref={isLastDocument ? lastDocumentElementRef : null}
     >
       <div className="p-6">
