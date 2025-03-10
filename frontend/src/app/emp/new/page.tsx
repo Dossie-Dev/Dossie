@@ -3,9 +3,14 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import axios, { formToJSON } from 'axios';
 import Image from "next/image";
 import scan from "../../../assets/scan.gif";
+
+interface Company {
+  _id: string;
+  name: string;
+}
 
 export default function New() {
   const router = useRouter();
@@ -17,11 +22,15 @@ export default function New() {
   const [id, setId] = useState('');
   const [formData, setFormData] = useState({
     title: '',
-    authors: [],
+    authors: [] as string[], // Initialize authors as an empty array
     department: '',
     data: '',
+    companyId: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
+  const [selectedCompanyName, setSelectedCompanyName] = useState("Select Organization");
 
   useEffect(() => {
     const userRole = localStorage.getItem("userRole");
@@ -29,6 +38,55 @@ export default function New() {
       router.push("/login");
     }
   }, []);
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      setIsLoadingCompanies(true);
+      try {
+        const response = await axios.get("/api/company?active=true");
+        const companiesData = response.data?.data?.data || [];
+        if (Array.isArray(companiesData)) {
+          setCompanies(companiesData);
+        } else {
+          console.error("Companies data is not an array:", companiesData);
+          toast.error("Error loading companies data");
+          setCompanies([]);
+        }
+      } catch (error) {
+        toast.error("Failed to fetch companies");
+        console.error("Error fetching companies:", error);
+        setCompanies([]);
+      } finally {
+        setIsLoadingCompanies(false);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
+
+
+
+
+  const handleAddAuthor = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      authors: [...prevData.authors, ''], // Add an empty string for a new author
+    }));
+  };
+  
+  const handleRemoveAuthor = (index: number) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      authors: prevData.authors.filter((_, i) => i !== index), // Remove the author at the specified index
+    }));
+  };
+  
+  const handleAuthorChange = (index: number, value: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      authors: prevData.authors.map((author, i) => (i === index ? value : author)), // Update the author at the specified index
+    }));
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -72,15 +130,19 @@ export default function New() {
           'Content-Type': 'multipart/form-data',
         },
       });
+      toast.success('Document extracted successfully!');
 
       const data = res.data;
       setResponse(data.data);
-      setFormData({
-        title: data.data.title || '',
-        authors: data.data.authors || [],
-        department: data.data.department || '',
-        data: data.data.data || '',
-      });
+      // Populate form data with extracted data, but allow manual override
+      setFormData((prevData) => ({
+        ...prevData,
+        title: data.data.title || prevData.title,
+        authors: data.data.authors || prevData.authors,
+        department: data.data.department || prevData.department,
+        data: data.data.data || prevData.data,
+        companyId: data.data.companyId || prevData.companyId,
+      }));
       setId(data.data._id);
       setIsModalOpen(true);
     } catch (error) {
@@ -92,23 +154,31 @@ export default function New() {
     }
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({
-      ...prev,
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: value,
     }));
+    console.log(formData)
+  };
+
+  const handleCompanySelect = (company: Company) => {
+    if (!company._id) {
+      toast.error("Invalid company selection");
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      companyId: company._id,
+    }));
+    setSelectedCompanyName(company.name);
   };
 
   const handleSaveChanges = async () => {
-    const newErrors: Record<string, string> = {};
-    if (!formData.title) newErrors.title = 'Title is required';
-    if (!formData.authors.length) newErrors.authors = 'At least one author is required';
-    if (!formData.department) newErrors.department = 'Department is required';
-    if (!formData.data) newErrors.data = 'Data is required';
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (!formData.title || !formData.department || !formData.data || !formData.companyId) {
+      toast.error("All fields are required!");
       return;
     }
 
@@ -201,7 +271,7 @@ export default function New() {
               Clear Selection
             </button>
 
-            {formData && (
+            {formData.data && (
               <button
                 className="bg-white mx-auto w-full md:w-56 text-blue-500 border border-blue-400 px-4 py-2 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition flex justify-center items-center"
                 onClick={() => setIsModalOpen(true)}
@@ -239,60 +309,148 @@ export default function New() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-white p-4 md:p-6 shadow-lg w-full max-w-md md:max-w-2xl rounded-[0.5rem]">
-            <h2 className="text-lg font-bold mb-2 text-blue-500">Preview Document</h2>
-            <hr />
-            <form onSubmit={(e) => { e.preventDefault(); handleSaveChanges(); }} className="flex flex-col gap-4 mt-8">
-              <div className="flex flex-col gap-2">
-                <label className="block text-sm font-medium text-gray-700">Title</label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  className="input input-bordered w-full"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="block text-sm font-medium text-gray-700">Department</label>
-                <input
-                  type="text"
-                  name="department"
-                  value={formData.department}
-                  onChange={handleChange}
-                  className="input input-bordered w-full"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="block text-sm font-medium text-gray-700">Content</label>
-                <textarea
-                  name="data"
-                  value={formData.data}
-                  onChange={handleChange}
-                  className="textarea textarea-bordered w-full"
-                  rows={5}
-                />
-              </div>
-              <div className="flex justify-end gap-4 mt-4">
-                <button
-                  type="button"
-                  className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 transition"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 px-4 py-2 text-white rounded hover:bg-blue-600 transition"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
+  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 overflow-scroll">
+    <div className="bg-white p-4 md:p-6 shadow-lg w-full max-w-md md:max-w-2xl rounded-[0.5rem] my-16 max-h-[80vh] overflow-y-auto">
+      <h2 className="text-xl font-bold text-blue-500 mb-4 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24"><path fill="currentColor" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm0-2h14V7H5zm7-2q-2.05 0-3.662-1.112T6 13q.725-1.775 2.338-2.887T12 9t3.663 1.113T18 13q-.725 1.775-2.337 2.888T12 17m0-2.5q-.625 0-1.062-.437T10.5 13t.438-1.062T12 11.5t1.063.438T13.5 13t-.437 1.063T12 14.5m0 1q1.05 0 1.775-.725T14.5 13t-.725-1.775T12 10.5t-1.775.725T9.5 13t.725 1.775T12 15.5"></path></svg>
+        Preview Document
+      </h2>
+      <hr className="border-gray-200 mb-6" />
+
+      <form onSubmit={(e) => { e.preventDefault(); handleSaveChanges(); }} className="flex flex-col gap-4 mt-8">
+        <div className="flex flex-col gap-2">
+          <label className="block text-sm font-medium text-blue-500">Title</label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            className="input input-bordered w-full"
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="block text-sm font-medium text-blue-500">Authors</label>
+          <div className='flex flex-wrap gap-2'>
+
+          {formData.authors.map((author, index) => (
+            <div key={index} className="flex items-center gap-2 ">
+              <input
+                type="text"
+                value={author}
+                onChange={(e) => handleAuthorChange(index, e.target.value)}
+                className="input input-bordered w-full"
+              />
+              <button
+                type="button"
+                onClick={() => handleRemoveAuthor(index)}
+                className="text-red-600 hover:text-red-900"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zm2-4h2V8H9zm4 0h2V8h-2z"></path></svg>
+              </button>
+            </div>
+          ))}
+
+</div>
+
+          <button
+            type="button"
+            onClick={handleAddAuthor}
+            className="btn btn-primary btn-sm"
+          >
+            Add Author
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="block text-sm font-medium text-blue-500">Department</label>
+          <input
+            type="text"
+            name="department"
+            value={formData.department}
+            onChange={handleChange}
+            className="input input-bordered w-full"
+          />
+        </div>
+
+        <div className="form-control w-full">
+          <div className="dropdown w-full">
+            <label className="block text-sm font-medium text-blue-500 mb-2">Organization</label>
+            <div 
+              tabIndex={0} 
+              role="button" 
+              className={`input input-bordered w-full flex items-center justify-between ${
+                formData.companyId ? 'text-base-content' : 'text-gray-400'
+              }`}
+            >
+              {isLoadingCompanies ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                selectedCompanyName
+              )}
+              <svg 
+                className="h-4 w-4 ml-2" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+            <ul className="dropdown-content menu bg-base-100 rounded-box z-[1] w-full p-2 shadow mt-2 max-h-60 overflow-auto">
+              {isLoadingCompanies ? (
+                <li className="text-center py-2">
+                  <span className="loading loading-spinner loading-sm"></span>
+                </li>
+              ) : companies.length > 0 ? (
+                companies.map((company) => (
+                  <li key={company._id}>
+                    <button 
+                      type="button"
+                      className="text-primary hover:bg-blue-500 hover:text-white"
+                      onClick={() => handleCompanySelect(company)}
+                    >
+                      {company.name}
+                    </button>
+                  </li>
+                ))
+              ) : (
+                <li><span className="text-gray-400 p-2">No companies available</span></li>
+              )}
+            </ul>
           </div>
         </div>
-      )}
+
+        <div className="flex flex-col gap-2">
+          <label className="block text-sm font-medium text-blue-500">Content</label>
+          <textarea
+            name="data"
+            value={formData.data}
+            onChange={handleChange}
+            className="textarea textarea-bordered w-full"
+            rows={5}
+          />
+        </div>
+
+        <div className="flex justify-end gap-4 mt-4">
+          <button
+            type="button"
+            className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 transition"
+            onClick={() => setIsModalOpen(false)}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="bg-blue-500 px-4 py-2 text-white rounded hover:bg-blue-600 transition"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
     </>
   );
 }

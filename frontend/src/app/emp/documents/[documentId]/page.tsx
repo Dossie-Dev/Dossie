@@ -176,7 +176,7 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 backdrop-blur-sm">
       <div className="bg-white p-8 rounded-xl shadow-2xl w-[800px] transform transition-all duration-300 ease-in-out">
-        <h2 className="text-2xl font-bold text-blue-500 mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-blue-500 mb-4 flex items-center gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6 text-blue-500"
