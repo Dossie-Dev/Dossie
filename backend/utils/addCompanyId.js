@@ -12,7 +12,7 @@ exports.addCompanyId = catchAsync(async (req, res, next) => {
         return next(new APIError("You do not have permission to perform this action", StatusCodes.FORBIDDEN));
     }
 
-    if (user.role == "admin") {
+    if (user.role == "admin" || user.role == "employee") {
         return next();
     }
 
