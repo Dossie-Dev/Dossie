@@ -121,7 +121,7 @@ export default function Documents() {
       {/* Breadcrumb */}
       <div className="mb-4 text-sm">
         <Link href="/" className="text-blue-500 hover:underline">Home</Link> / 
-        <Link href="/emp/documents" className="text-gray-500 hover:underline"> Documents</Link>
+        <Link href="/admin/documents" className="text-gray-500 hover:underline"> Documents</Link>
       </div>
 
       {/* Header with Document Count Badge */}
@@ -328,7 +328,7 @@ interface DocumentCardProps {
 const DocumentCard = ({ doc, isLastDocument, lastDocumentElementRef }: DocumentCardProps) => (
   <Link
     className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-    href={`/emp/documents/${doc._id}`}
+    href={`/admin/documents/${doc._id}`}
     ref={isLastDocument ? lastDocumentElementRef : null}
     aria-label={`View document: ${doc.title}`}
   >

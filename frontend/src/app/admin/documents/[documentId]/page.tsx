@@ -26,13 +26,13 @@ const Breadcrumbs = ({ document }: { document: Document | null }) => {
     <nav className="mb-4">
       <ol className="list-reset text-sm flex text-grey-dark">
         <li>
-          <a href="/emp/documents" className="text-blue-500 hover:text-blue-700">Home</a>
+          <a href="/admin/documents" className="text-blue-500 hover:text-blue-700">Home</a>
         </li>
         <li>
           <span className="mx-2">/</span>
         </li>
         <li>
-          <a href="/emp/documents" className="text-blue-500 hover:text-blue-700">Documents</a>
+          <a href="/admin/documents" className="text-blue-500 hover:text-blue-700">Documents</a>
         </li>
         <li>
           <span className="mx-2">/</span>
@@ -447,7 +447,7 @@ export default function DocumentDetails({ params }: { params: Promise<{ document
 
       if (response.data.status === "success") {
         toast.success("Document successfully deleted!");
-        router.push("/emp/documents");
+        router.push("/admin/documents");
       }
     } catch (error) {
       console.error("Error deleting document:", error);
