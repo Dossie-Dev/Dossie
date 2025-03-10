@@ -116,6 +116,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, isLoading }) => {
 const EditModal = ({ isOpen, onClose, document, onSave }) => {
   const [formData, setFormData] = useState({
     title: document.title,
+    authors: document.authors || [], // Initialize authors from the document
     department: document.department,
     data: document.data,
     companyId: document.companyId || "",
@@ -171,11 +172,32 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
     setSelectedCompanyName(company.name);
   };
 
+  const handleAddAuthor = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      authors: [...prevData.authors, ""], // Add an empty string for a new author
+    }));
+  };
+
+  const handleRemoveAuthor = (index: number) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      authors: prevData.authors.filter((_, i) => i !== index), // Remove the author at the specified index
+    }));
+  };
+
+  const handleAuthorChange = (index: number, value: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      authors: prevData.authors.map((author, i) => (i === index ? value : author)), // Update the author at the specified index
+    }));
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 backdrop-blur-sm">
-      <div className="bg-white p-8 rounded-xl shadow-2xl w-[800px] transform transition-all duration-300 ease-in-out">
+      <div className="bg-white p-8 rounded-xl shadow-2xl w-[800px] max-h-[80vh] overflow-y-auto transform transition-all duration-300 ease-in-out">
         <h2 className="text-xl font-bold text-blue-500 mb-4 flex items-center gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -218,6 +240,38 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
 
           <div className="flex flex-col gap-2">
             <label className="block text-sm font-medium text-blue-500">
+              Authors
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {formData.authors.map((author, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={author}
+                    onChange={(e) => handleAuthorChange(index, e.target.value)}
+                    className="input input-bordered w-full"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAuthor(index)}
+                    className="text-red-600 hover:text-red-900"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zm2-4h2V8H9zm4 0h2V8h-2z"></path></svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={handleAddAuthor}
+              className="btn btn-primary btn-sm"
+            >
+              Add Author
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="block text-sm font-medium text-blue-500">
               Department
             </label>
             <input
@@ -230,17 +284,16 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
             />
           </div>
 
-
           <div className="form-control w-full">
-          <label className="block text-sm font-medium text-blue-500 mb-2 ">
+            <label className="block text-sm font-medium text-blue-500 mb-2">
               Organization
             </label>
             <div className="dropdown w-full">
-              <div 
-                tabIndex={0} 
-                role="button" 
+              <div
+                tabIndex={0}
+                role="button"
                 className={`input input-bordered w-full flex items-center justify-between ${
-                  formData.companyId ? 'text-base-content' : 'text-gray-400'
+                  formData.companyId ? "text-base-content" : "text-gray-400"
                 }`}
               >
                 {isLoadingCompanies ? (
@@ -248,10 +301,10 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
                 ) : (
                   selectedCompanyName
                 )}
-                <svg 
-                  className="h-4 w-4 ml-2" 
-                  fill="none" 
-                  stroke="currentColor" 
+                <svg
+                  className="h-4 w-4 ml-2"
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
@@ -265,7 +318,7 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
                 ) : companies.length > 0 ? (
                   companies.map((company) => (
                     <li key={company._id}>
-                      <button 
+                      <button
                         type="button"
                         className="text-primary hover:bg-blue-500 hover:text-white"
                         onClick={() => handleCompanySelect(company)}
@@ -275,12 +328,13 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
                     </li>
                   ))
                 ) : (
-                  <li><span className="text-gray-400 p-2">No companies available</span></li>
+                  <li>
+                    <span className="text-gray-400 p-2">No companies available</span>
+                  </li>
                 )}
               </ul>
             </div>
           </div>
-
 
           <div className="flex flex-col gap-2">
             <label className="block text-sm font-medium text-blue-500">
@@ -295,8 +349,6 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
               placeholder="Enter document content"
             />
           </div>
-
-         
 
           <div className="flex justify-end gap-4 mt-6">
             <button
@@ -471,9 +523,9 @@ export default function DocumentDetails({ params }: { params: Promise<{ document
       ) : (
         <>
           <h1 className="text-2xl font-bold mb-2 text-blue-500">{document.title}</h1>
-          <h2 className="text-lg font-semibold mb-2">Authors: {document.authors?.join(", ")}</h2>
-          <h3 className="text-md font-semibold mb-2">Department: {document.department}</h3>
-          <p className="mt-4 text-sm text-gray-500">Created At: {new Date(document.createdAt).toLocaleDateString()}</p>
+          <h2 className="text-md font-semibold mb-2"><span className="text-sm text-blue-500">Authors:</span>  {document.authors?.join(", ")}</h2>
+          <h3 className="text-md font-semibold mb-2"><span className="text-sm text-blue-500">Department:</span> {document.department}</h3>
+          <p className="mt-4 text-sm text-gray-500"><span className="text-sm text-blue-500">Created At:</span> {new Date(document.createdAt).toLocaleDateString()}</p>
           <hr className="my-8" />
           <div className="mt-4">
             {typeof document?.data === "string" ? (
