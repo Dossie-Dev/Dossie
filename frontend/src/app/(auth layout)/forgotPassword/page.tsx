@@ -54,7 +54,7 @@ export default function ForgotPassword() {
 
       setIsEmailSent(true);
       toast.success("Password reset email sent! Check your inbox.");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error sending password reset email:", error);
       toast.error(
         error.response?.data?.message || "Failed to send password reset email."
@@ -75,6 +75,8 @@ export default function ForgotPassword() {
               <Image
                 src={temp}
                 alt="Reset Password"
+                width={500} // Add width
+                height={500} // Add height
                 className="object-cover"
                 priority
               />
@@ -84,7 +86,7 @@ export default function ForgotPassword() {
           {/* Form Section */}
           <div className="bg-white p-8 rounded-2xl shadow-lg">
             {!isEmailSent ? (
-              <div className="space-y-6">
+              <div className="space-y-6" aria-live="polite">
                 <div className="text-center space-y-2">
                   <h2 className="text-3xl font-bold text-blue-500 mb-4">
                     Forgot Password?
@@ -101,20 +103,7 @@ export default function ForgotPassword() {
                     </label>
                     <div className="mt-1 relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="w-5 h-5 text-gray-400"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-                          />
-                        </svg>
+                        <EmailIcon className="w-5 h-5 text-gray-400" />
                       </div>
                       <input
                         id="email"
@@ -133,47 +122,30 @@ export default function ForgotPassword() {
                   </div>
 
                   <button
-                    onClick={handleSendEmail}
-                    disabled={isLoading || !!emailError}
-                    className={`btn btn-primary w-full ${isLoading ? "loading" : ""}`}
-                  >
-                    {!isLoading && (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-5 h-5"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
-                        />
-                      </svg>
-                    )}
-                    {isLoading ? "Sending Reset Link..." : "Send Reset Link"}
-                  </button>
+  onClick={handleSendEmail}
+  disabled={isLoading || !!emailError}
+  className={`btn btn-primary w-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary rounded-xl ${
+    isLoading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+  }`}
+>
+  {isLoading ? (
+    <div className="flex items-center justify-center">
+      <Spinner className="h-5 w-5 mr-2 animate-spin" />
+      <span className="text-md">Please wait...</span>
+    </div>
+  ) : (
+    <div className="flex items-center">
+      <EmailIcon className="w-5 h-5 mr-2" />
+      <span className="text-md">Send Reset Link</span>
+    </div>
+  )}
+</button>
                 </div>
               </div>
             ) : (
-              <div className="text-center space-y-4">
+              <div className="text-center space-y-4" aria-live="polite">
                 <div className="flex justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-16 h-16 text-primary"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-                    />
-                  </svg>
+                  <EmailIcon className="w-16 h-16 text-primary" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900">Check your email</h3>
                 <p className="text-gray-500">
@@ -197,20 +169,7 @@ export default function ForgotPassword() {
                 href="/login"
                 className="text-sm font-medium text-primary hover:text-primary/80 flex items-center justify-center gap-2"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-4 h-4"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"
-                  />
-                </svg>
+                <BackIcon className="w-4 h-4" />
                 Back to Login
               </Link>
             </div>
@@ -220,3 +179,55 @@ export default function ForgotPassword() {
     </div>
   );
 }
+
+// Reusable Icons
+const EmailIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className={className}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+    />
+  </svg>
+);
+
+const BackIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className={className}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"
+    />
+  </svg>
+);
+
+const Spinner = ({ className }: { className?: string }) => (
+  <svg
+    className={`animate-spin ${className}`}
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+    />
+  </svg>
+);

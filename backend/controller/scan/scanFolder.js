@@ -154,6 +154,10 @@ async function extractResearchPaperDataBatch(base64Images) {
 
  exports.scanFolder = catchAsync(async (req, res, next) => {
 
+  if (!req.files) {
+    return next(new APIError('There is no file', StatusCodes.NOT_FOUND)); 
+  }
+
   // const sessionUuid = crypto.randomUUID();
   const files = [].concat(req.files.files); // Convert files to an array if it's a single file req.files;
 
@@ -161,7 +165,6 @@ async function extractResearchPaperDataBatch(base64Images) {
     return next(new APIError('There is no file', StatusCodes.NOT_FOUND)); 
   }
 
-console.log(files);
   // sort the file by their name to ensure they are in the correct order
   files.sort((a, b) => {
     const nameA = a.name.toLowerCase();

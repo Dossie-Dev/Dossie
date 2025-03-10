@@ -1,10 +1,11 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import debounce from 'lodash/debounce';
+import debounce from "lodash/debounce";
+import { useRouter } from "next/navigation";
 
 interface Employee {
   id: string;
@@ -28,20 +29,56 @@ export default function Employees() {
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Debounced search handler
-  const debouncedSearch = useCallback(
-    debounce((value) => {
-      setSearchTerm(value);
-      setIsSearching(false);
-    }, 300),
+  const router = useRouter();
+
+  // Check user role on the client side
+  useEffect(() => {
+    const userRole = localStorage.getItem("userRole");
+    if (userRole !== "admin") {
+      router.push("/login");
+    }
+  }, [router]);
+
+  // Fetch employees
+  const fetchEmployees = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("/api/users/?role=employee", { withCredentials: true });
+      const fetchedEmployees = response.data?.data?.data || [];
+      setEmployees(fetchedEmployees);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching employees:", err);
+      setError("Failed to fetch employees. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchEmployees();
+  }, [fetchEmployees]);
+
+  // Debounced search
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        setSearchTerm(value);
+        setIsSearching(false);
+      }, 300),
     []
   );
+
+  useEffect(() => {
+    return () => debouncedSearch.cancel();
+  }, [debouncedSearch]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsSearching(true);
     debouncedSearch(e.target.value);
   };
 
+  // Toggle account status
   const toggleAccountStatus = async (employeeId: string, currentStatus: boolean) => {
     try {
       setIsUpdating(employeeId);
@@ -51,11 +88,9 @@ export default function Employees() {
 
       if (response.status === 200) {
         toast.success(`Employee ${action}d successfully!`);
-        setEmployees((prevEmployees) =>
-          prevEmployees.map((employee) =>
-            employee.id === employeeId
-              ? { ...employee, active: !currentStatus }
-              : employee
+        setEmployees((prev) =>
+          prev.map((employee) =>
+            employee.id === employeeId ? { ...employee, active: !currentStatus } : employee
           )
         );
       } else {
@@ -69,66 +104,44 @@ export default function Employees() {
     }
   };
 
-  useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get("/api/users/?role=employee", { withCredentials: true });
-        const fetchedEmployees = response.data?.data?.data || [];
-        setEmployees(fetchedEmployees);
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching employees:", err);
-        setError("Failed to fetch employees. Please try again later.");
-      } finally {
-        setLoading(false);
+  // Sorting logic
+  const sortEmployees = useCallback(
+    (a: Employee, b: Employee) => {
+      let comparison = 0;
+      if (sortField === "name") {
+        comparison = a.fullName.localeCompare(b.fullName);
+      } else if (sortField === "email") {
+        comparison = a.email.localeCompare(b.email);
+      } else if (sortField === "role") {
+        comparison = a.role.localeCompare(b.role);
+      } else if (sortField === "date") {
+        comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       }
-    };
+      return sortOrder === "asc" ? comparison : -comparison;
+    },
+    [sortField, sortOrder]
+  );
 
-    fetchEmployees();
+  const handleSort = useCallback((field: SortField) => {
+    setSortField(field);
+    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
   }, []);
 
-  const sortEmployees = (a: Employee, b: Employee) => {
-    if (sortField === "name") {
-      return sortOrder === "asc" 
-        ? a.fullName.localeCompare(b.fullName)
-        : b.fullName.localeCompare(a.fullName);
-    } else if (sortField === "email") {
-      return sortOrder === "asc"
-        ? a.email.localeCompare(b.email)
-        : b.email.localeCompare(a.email);
-    } else if (sortField === "role") {
-      return sortOrder === "asc"
-        ? a.role.localeCompare(b.role)
-        : b.role.localeCompare(a.role);
-    } else {
-      return sortOrder === "asc"
-        ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    }
-  };
+  // Filter and sort employees
+  const filteredEmployees = useMemo(() => {
+    const searchValue = searchTerm.toLowerCase();
+    return employees
+      .filter((employee) => {
+        return (
+          employee.fullName?.toLowerCase().includes(searchValue) ||
+          employee.email?.toLowerCase().includes(searchValue) ||
+          employee.role?.toLowerCase().includes(searchValue)
+        );
+      })
+      .sort(sortEmployees);
+  }, [employees, searchTerm, sortEmployees]);
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortOrder("asc");
-    }
-  };
-
-  const filteredEmployees = employees
-    .filter((employee) => {
-      const searchValue = searchTerm.toLowerCase();
-      return (
-        employee.fullName?.toLowerCase().includes(searchValue) ||
-        employee.email?.toLowerCase().includes(searchValue) ||
-        employee.role?.toLowerCase().includes(searchValue)
-      );
-    })
-    .sort(sortEmployees);
-
-  // Loading skeleton component
+  // Loading skeleton
   const LoadingSkeleton = () => (
     <div className="space-y-4">
       {[...Array(5)].map((_, i) => (
@@ -144,7 +157,7 @@ export default function Employees() {
     </div>
   );
 
-  // Empty state component
+  // Empty state
   const EmptyState = () => (
     <div className="text-center py-12">
       <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -155,7 +168,7 @@ export default function Employees() {
       <div className="mt-6">
         <Link
           href="/admin/employees/new"
-          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-500-focus"
+          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600"
         >
           Add Employee
         </Link>
@@ -164,12 +177,20 @@ export default function Employees() {
   );
 
   return (
-    <div className="flex flex-col gap-2 w-full m-8">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4">
+    <div className="flex flex-col gap-2 w-full m-4">
+      <div className="breadcrumbs text-sm px-4 -mb-4">
+        <ul>
+          <li>
+            <Link href="/admin">Dashboard</Link>
+          </li>
+          <li className="font-semibold">Employees</li>
+        </ul>
+      </div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-4">
         <div className="w-full md:flex-1">
           <div className="join w-full">
-            <div className="w-full">
-              <div className="join-item input input-bordered flex items-center gap-2 w-full">
+            <div className="w-[22rem] md:w-full">
+              <div className="join-item input input-bordered flex items-center gap-2">
                 <input
                   type="text"
                   className="grow"
@@ -207,25 +228,38 @@ export default function Employees() {
                 <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3z" />
               </svg>
               Sort
-              {sortField !== 'none' && (
+              {sortField !== "none" && (
                 <div className="badge badge-sm badge-primary ml-2">
                   {sortField} {sortOrder === "asc" ? "↑" : "↓"}
                 </div>
               )}
             </div>
             <ul className="dropdown-content menu bg-base-100 rounded-box z-[1] w-56 p-2 shadow-lg">
-              <li><a className={sortField === "name" ? "active" : ""} onClick={() => handleSort("name")}>Name {sortField === "name" && (sortOrder === "asc" ? "↑" : "↓")}</a></li>
-              <li><a className={sortField === "email" ? "active" : ""} onClick={() => handleSort("email")}>Email {sortField === "email" && (sortOrder === "asc" ? "↑" : "↓")}</a></li>
-              <li><a className={sortField === "role" ? "active" : ""} onClick={() => handleSort("role")}>Role {sortField === "role" && (sortOrder === "asc" ? "↑" : "↓")}</a></li>
-              <li><a className={sortField === "date" ? "active" : ""} onClick={() => handleSort("date")}>Date {sortField === "date" && (sortOrder === "asc" ? "↑" : "↓")}</a></li>
+              <li>
+                <a className={sortField === "name" ? "active" : ""} onClick={() => handleSort("name")}>
+                  Name {sortField === "name" && (sortOrder === "asc" ? "↑" : "↓")}
+                </a>
+              </li>
+              <li>
+                <a className={sortField === "email" ? "active" : ""} onClick={() => handleSort("email")}>
+                  Email {sortField === "email" && (sortOrder === "asc" ? "↑" : "↓")}
+                </a>
+              </li>
+              <li>
+                <a className={sortField === "role" ? "active" : ""} onClick={() => handleSort("role")}>
+                  Role {sortField === "role" && (sortOrder === "asc" ? "↑" : "↓")}
+                </a>
+              </li>
+              <li>
+                <a className={sortField === "date" ? "active" : ""} onClick={() => handleSort("date")}>
+                  Date {sortField === "date" && (sortOrder === "asc" ? "↑" : "↓")}
+                </a>
+              </li>
             </ul>
           </div>
 
           <div className="tooltip tooltip-bottom" data-tip="Add new employee">
-            <Link
-              href="/admin/employees/new"
-              className="btn btn-primary"
-            >
+            <Link href="/admin/employees/new" className="btn btn-primary">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
               </svg>
@@ -244,42 +278,33 @@ export default function Employees() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span>{error}</span>
-            <button onClick={() => window.location.reload()} className="btn btn-sm">Retry</button>
+            <button onClick={() => window.location.reload()} className="btn btn-sm">
+              Retry
+            </button>
           </div>
         ) : filteredEmployees.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="overflow-x-auto rounded-lg border border-base-200">
+          <div className="overflow-x-auto rounded-lg border border-base-200 w-[22rem] md:w-full">
             <table className="table table-zebra w-full">
-              <thead className="bg-base-200">
+              <thead>
                 <tr>
+                  <th>#</th>
                   <th>Full Name</th>
                   <th>Email</th>
-                  <th>Role</th>
                   <th>Status</th>
                   <th>Created At</th>
-                  <th className="text-right">Actions</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredEmployees.map((employee) => (
+                {filteredEmployees.map((employee, index) => (
                   <tr key={employee.id} className="hover">
+                    <th>{index + 1}</th>
                     <td className="font-medium">{employee.fullName}</td>
                     <td>{employee.email}</td>
                     <td>
-                      <span className="badge badge-ghost">{employee.role}</span>
-                    </td>
-                    <td>
-                      <span className={`badge ${employee.active ? 'badge-success' : 'badge-error'} gap-2`}>
-                        {employee.active ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        )}
+                      <span className={`badge ${employee.active ? "bg-green-500 text-white px-4 py-[0.8rem]" : "text-white bg-red-500 p-4"} gap-2`}>
                         {employee.active ? "Active" : "Inactive"}
                       </span>
                     </td>
@@ -288,31 +313,21 @@ export default function Employees() {
                         {new Date(employee.createdAt).toLocaleDateString()}
                       </div>
                     </td>
-                    <td className="text-right">
-                      <div className="flex gap-2 justify-end">
-                        <div className="tooltip" data-tip={`${employee.active ? 'Deactivate' : 'Activate'} employee`}>
-                          <button
-                            className={`btn btn-sm ${
-                              employee.active ? "btn-error" : "btn-success"
-                            } ${isUpdating === employee.id ? "loading" : ""}`}
-                            onClick={() => toggleAccountStatus(employee.id, employee.active)}
-                            disabled={isUpdating === employee.id}
-                          >
-                            {!isUpdating && (
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                {employee.active ? (
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                ) : (
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                )}
-                              </svg>
-                            )}
-                            {isUpdating === employee.id ? 
-                              "Updating..." : 
-                              employee.active ? "Deactivate" : "Activate"
-                            }
-                          </button>
-                        </div>
+                    <td>
+                      <div className="flex gap-2">
+                        <button
+                          className={`btn btn-sm ${
+                            employee.active ? "bg-red-500 hover:bg-red-600 text-white" : "bg-green-500 hover:bg-green-600 text-white"
+                          } ${isUpdating === employee.id ? "loading" : ""}`}
+                          onClick={() => toggleAccountStatus(employee.id, employee.active)}
+                          disabled={isUpdating === employee.id}
+                        >
+                          {isUpdating === employee.id
+                            ? "Updating..."
+                            : employee.active
+                            ? "Deactivate"
+                            : "Activate"}
+                        </button>
                       </div>
                     </td>
                   </tr>

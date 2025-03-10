@@ -39,7 +39,7 @@ exports.getAll = (Model, options = "", obj = {}) =>
     // console.log(currentTime)
     // console.log(_parsedOriginalUrl.pathname)
 
-    let opt = {};
+    let opt = {...req.body};
     // if (options === "addUser") opt = { user: req.user.id };
     // if (options === "myCertificate") opt = { user: req.user.id };
     // if (options === "addOrganization") opt = { organization: req.params.id };
@@ -51,7 +51,6 @@ exports.getAll = (Model, options = "", obj = {}) =>
 
     const page = req.query.page * 1 || 1;
 
-    console.log(opt, options)
     const limit = req.query.limit * 1 || 10;
 
     let count = new APIFeatures(Model.find(opt), req.query).filter().count();
@@ -116,7 +115,9 @@ exports.updateOne = (Model) =>
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     // const doc = await Model.findByIdAndDelete(req.params.id);
-    const model = await Model.findOne({ _id: req.params.id });
+    const model = await Model.deleteOne({ _id: req.params.id });
+
+
 
     if (!model) {
       return next(
@@ -124,8 +125,7 @@ exports.deleteOne = (Model) =>
       );
     }
 
-    model.active = false;
-    await model.save();
+    // delete the value that was found from the model
 
     res.status(StatusCodes.OK).json({
       status: "success",

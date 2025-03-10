@@ -22,7 +22,6 @@ export default function Activate() {
         .then((response) => {
           if (response.data.success) {
             // Account activated
-            console.log(response.data.message);
             setIsActivated(true);
           } else {
             console.error("Activation failed:", response.data.message);

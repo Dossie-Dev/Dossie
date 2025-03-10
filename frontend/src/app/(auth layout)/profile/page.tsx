@@ -55,7 +55,7 @@ export default function Profile() {
       const userData = response.data.data.data[0];
       setProfile(userData);
       setEditedProfile(userData);
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Failed to load profile");
       if (error.response?.status === 401) {
         router.push("/login");
@@ -150,7 +150,7 @@ export default function Profile() {
       } else {
         throw new Error(response.data.message || "Failed to update profile");
       }
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage = error.response?.data?.message || "Failed to update profile";
       toast.error(errorMessage);
       
@@ -196,7 +196,6 @@ export default function Profile() {
         }
       });
 
-      console.log('Password update response:', response);
 
       if (response.data.status === 'success') {
         toast.success("Password updated successfully");
@@ -215,7 +214,7 @@ export default function Profile() {
           confirmPassword: false
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Password update error:', error);
       const errorMessage = error.response?.data?.message || "Failed to update password";
       toast.error(errorMessage);
