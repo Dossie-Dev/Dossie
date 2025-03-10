@@ -34,7 +34,7 @@ export default function New() {
 
   useEffect(() => {
     const userRole = localStorage.getItem("userRole");
-    if (userRole !== "employee") {
+    if (userRole !== "admin") {
       router.push("/login");
     }
   }, []);
@@ -191,7 +191,7 @@ export default function New() {
 
       toast.success('Changes saved successfully!');
       setIsModalOpen(false);
-      router.push('/emp/documents');
+      router.push('/admin/documents');
     } catch (error) {
       console.error('Error saving changes:', error);
       toast.error('Failed to save changes. Please try again.');

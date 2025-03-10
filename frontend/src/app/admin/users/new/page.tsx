@@ -55,7 +55,11 @@ export default function New() {
         setIsLoading(false);
       }
     };
-
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole !== "admin") {
+      router.push("/login");
+    }
     fetchCompanies();
   }, []);
 
@@ -112,6 +116,13 @@ export default function New() {
 
   return (
     <div className="p-3 py-8 w-96 mx-auto">
+      <div className="breadcrumbs text-sm mb-4">
+        <ul>
+          <li><Link href="/admin">Dashboard</Link></li>
+          <li><Link href="/admin/users">Users</Link></li>
+          <li className="font-semibold">Add New User</li>
+        </ul>
+      </div>
       <h1 className="text-center font-semibold my-7 mb-8">
         <span className="text-2xl font-bold text-primary opacity-75">
           Add New User

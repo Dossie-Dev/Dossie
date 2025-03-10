@@ -10,7 +10,7 @@ router.use(protect);
 
 router
     .route("/")
-    .get(restrictTo("admin", "user", "employee"), getAllCompanies)
+    .get(restrictTo("admin", "user","employee"), getAllCompanies)
     .post(restrictTo("admin"), createCompany);
 
 

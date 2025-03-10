@@ -6,10 +6,14 @@ export default function Emp() {
   const router = useRouter();
 
 useEffect(() => {
-
-    router.push("/emp/documents");
-  
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole === "employee") {
+        router.push("/emp/documents");
+    } else {
+        router.push("/login");
+    }
 }, []);
 
-  return <div >emp</div>;
+  return <div ></div>;
 }

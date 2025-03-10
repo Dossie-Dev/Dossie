@@ -64,7 +64,7 @@ export default function Documents() {
     };
 
     const userRole = localStorage.getItem("userRole");
-    if (userRole !== "employee") {
+    if (userRole !== "admin") {
       router.push("/login");
       return;
     }
@@ -243,7 +243,7 @@ const FilterSection = ({
           )}
         </label>
       </div>
-          <Link href={"/emp/new"}>
+          <Link href={"/admin/new"}>
       <button
         className="btn btn-primary text-white"
         aria-label="Add New Document"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -9,6 +9,21 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function New() {
   const router = useRouter(); 
+
+
+
+  useEffect(() => {
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole !== "admin") {
+      router.push("/login");
+    }
+  }, []);
+
+
+
+
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -103,7 +118,14 @@ export default function New() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-2xl mx-auto  p-4 sm:px-6 lg:px-8">
+      <div className="breadcrumbs text-sm mb-4">
+        <ul>
+          <li><Link href="/admin">Dashboard</Link></li>
+          <li><Link href="/admin/companies">Companies</Link></li>
+          <li className="font-semibold">Add New Company</li>
+        </ul>
+      </div>
       <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
         <div className="px-8 py-6 bg-blue-500 text-white">
           <div className="flex items-center justify-between">
