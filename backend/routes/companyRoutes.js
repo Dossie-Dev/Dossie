@@ -15,8 +15,8 @@ router
 
 
 router.route("/:id")
-    .get(restrictTo("admin","employee", "user"), getOneCompany)
-    .patch(restrictTo("admin"), updateOneCompany)
-    .delete(restrictTo("admin"), deleteOneCompany);
+    .get(restrictTo("admin", "user", "employee"), getOneCompany)
+    .patch(restrictTo("admin", "employee"), updateOneCompany)
+    .delete(restrictTo("admin", "employee"), deleteOneCompany);
 
 module.exports = router;
