@@ -5,6 +5,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import Link from "next/link";
 
 interface UserProfile {
   firstName: string;
@@ -42,7 +43,14 @@ export default function Profile() {
     confirmPassword: false
   });
 
+
+ 
   useEffect(() => {
+    const userRole = localStorage.getItem("userRole");
+    
+    if (userRole !== "employee") {
+        router.push("/login");
+    }
     fetchProfile();
   }, []);
 
@@ -196,7 +204,6 @@ export default function Profile() {
         }
       });
 
-      console.log('Password update response:', response);
 
       if (response.data.status === 'success') {
         toast.success("Password updated successfully");
@@ -239,7 +246,15 @@ export default function Profile() {
   return (
     // <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto py-16">
+        {/* Breadcrumb Navigation */}
+        <div className="mb-4">
+            <Link href="/" className="text-blue-500 hover:underline">Home</Link> / 
+            <Link href="/emp/documents" className="text-gray-500 hover:underline">Documents</Link> / 
+            <Link href="/emp/profile" className="text-gray-500 hover:underline">Profile</Link>
+          </div>
         <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
+          
+
           {/* Header */}
           <div className="px-8 py-6 bg-blue-500 text-white">
             <div className="flex items-center justify-between">

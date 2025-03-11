@@ -196,7 +196,6 @@ export default function Profile() {
         }
       });
 
-      console.log('Password update response:', response);
 
       if (response.data.status === 'success') {
         toast.success("Password updated successfully");
