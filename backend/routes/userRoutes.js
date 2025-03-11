@@ -49,7 +49,7 @@ router.get("/", protect, getAllUsers);
 router.get("/logout", protect, logout);
 router.get("/myEdits", protect); //getMyEdits
 
-router.post("/signup", validationRules[2], signUp);
+// router.post("/signup", validationRules[2], signUp);
 router.post("/login", validationRules[3] ,login);
 router.post("/forgotPassword", validationRules[4], forgotPassword);
 router.post("/resetPassword/:token", resetPassword);
