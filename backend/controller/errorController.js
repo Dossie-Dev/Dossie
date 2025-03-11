@@ -18,7 +18,7 @@ const handleDuplicateDB = (err) => {
 };
 
 const handleValidatonDB = (err) => {
-  console.log("gotcha")
+  // console.log("gotcha")
   const errors = Object.values(err.errors).map((el) => el.message);
 
   const message = `Invalid input data. ${errors.join(". ")}`;
@@ -41,7 +41,7 @@ const errorOnpro = (err, res) => {
       message: err.message,
     });
   } else {
-    console.log(err);
+    // console.log(err);
     res.status(err.statusCode).json({
       status: err.status,
       message: "Something is wrong",
@@ -49,7 +49,7 @@ const errorOnpro = (err, res) => {
   }
 };
 const errorOndev = (err, res) => {
-  console.log(err);
+  // console.log(err);
   res.status(err.statusCode).json({
     status: err.status,
     message: err.message,
@@ -66,7 +66,7 @@ module.exports = async (err, req, res, next) => {
   if (process.env.NODE_ENV === "development") {
     errorOndev(err, res);
   } else if (process.env.NODE_ENV === "production") {
-    console.log(err.message + 9090)
+    // console.log(err.message + 9090)
     let error = {
       ...err
     };

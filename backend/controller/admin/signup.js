@@ -41,7 +41,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
   try {
     await new Email(newUser, activationURL).sendPasswordReset();
-    console.log(activationURL);
+    // console.log(activationURL);
 
     res.status(StatusCodes.CREATED).json({
       status: "success",
@@ -73,7 +73,7 @@ exports.registerEmployee = catchAsync(async (req, res, next) => {
   parsedBody.password = password;
   parsedBody.passwordConfirm = password;
 
-  console.log(parsedBody);
+  // console.log(parsedBody);
 
   const user = await User.findOne({
     email,

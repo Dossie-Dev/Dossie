@@ -155,7 +155,7 @@ exports.deleteMany = (Model, delArr) =>
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
-    console.log(doc);
+    // console.log(doc);
     if (!doc) {
       return next(
         new APIError(`An error occured while creating the document`, 500)

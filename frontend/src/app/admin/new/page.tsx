@@ -160,7 +160,7 @@ export default function New() {
       ...prevData,
       [name]: value,
     }));
-    console.log(formData)
+    // console.log(formData)
   };
 
   const handleCompanySelect = (company: Company) => {
