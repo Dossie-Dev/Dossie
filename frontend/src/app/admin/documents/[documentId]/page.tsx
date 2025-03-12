@@ -121,8 +121,6 @@ const EditModal = ({ isOpen, onClose, document, onSave }) => {
     data: document.data,
     companyId: document.companyId ? document.companyId._id : "",  });
 
-  });
-
   const [companies, setCompanies] = useState<Company[]>([]);
   const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
   const [selectedCompanyName, setSelectedCompanyName] = useState("Select Company");
