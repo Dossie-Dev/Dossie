@@ -141,9 +141,10 @@ export default function DocumentDetails({ params }: { params: Promise<{ document
       ) : (
         <>
           <h1 className="text-2xl font-bold mb-2 text-blue-500">{document.title}</h1>
-          <h2 className="text-lg font-semibold mb-2">Authors: {document.authors?.join(", ")}</h2>
-          <h3 className="text-md font-semibold mb-2">Department: {document.department}</h3>
-          <p className="mt-4 text-sm text-gray-500">Created At: {new Date(document.createdAt).toLocaleDateString()}</p>
+          <h2 className="text-md font-semibold mb-2"><span className="text-sm text-blue-500">Authors:</span>  {document.authors?.join(", ")}</h2>
+          <h3 className="text-md font-semibold mb-2"><span className="text-sm text-blue-500">Department:</span> {document.department}</h3>
+          <h3 className="text-md font-semibold mb-2"><span className="text-sm text-blue-500">Organization:</span> {document.companyId ? document.companyId.name : <span className="text-red-600">No Organization</span>}</h3>
+          <p className="mt-4 text-sm text-gray-500"><span className="text-sm text-blue-500">Created At:</span> {new Date(document.createdAt).toLocaleDateString()}</p>
           <hr className="my-8" />
           <div className="mt-4">
             {typeof document?.data === "string" ? (

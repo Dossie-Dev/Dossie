@@ -141,7 +141,7 @@ export default function New() {
         authors: data.data.authors || prevData.authors,
         department: data.data.department || prevData.department,
         data: data.data.data || prevData.data,
-        companyId: data.data.companyId || prevData.companyId,
+        companyId: data.data.companyId._id || prevData.companyId,
       }));
       setId(data.data._id);
       setIsModalOpen(true);
