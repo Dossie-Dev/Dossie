@@ -108,7 +108,11 @@ export default function Documents() {
 
   // Reset filters
   const resetFilters = () => {
-    setFilters({ department: "", author: "", date: "" });
+    setFilters({
+      department: '',
+      author: '',
+      date: '',
+    });
   };
 
   // Scroll to top
@@ -214,7 +218,7 @@ const FilterSection = ({
   sortOrder,
   setSortOrder,
 }: FilterSectionProps) => (
-  <div className="mb-8">
+  <div className="mb-4">
     <div className="flex flex-row justify-between items-center gap-4 py-4">
       <div className="w-full md:flex-1">
         <label className="input input-bordered flex items-center gap-2 w-full">
@@ -256,48 +260,7 @@ const FilterSection = ({
     </div>
 
     {/* Advanced Filters */}
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 justify-center items-end">
-      <div>
-        <label className="block text-sm font-semibold text-blue-500 mb-1">Department</label>
-        <input
-          type="text"
-          placeholder="Filter by department"
-          value={filters.department}
-          onChange={(e) => setFilters({ ...filters, department: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          aria-label="Filter by department"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-semibold text-blue-500 mb-1">Author</label>
-        <input
-          type="text"
-          placeholder="Filter by author"
-          value={filters.author}
-          onChange={(e) => setFilters({ ...filters, author: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          aria-label="Filter by author"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-semibold text-blue-500 mb-1">Date</label>
-        <input
-          type="date"
-          value={filters.date}
-          onChange={(e) => setFilters({ ...filters, date: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          aria-label="Filter by date"
-        />
-      </div>
-
-      <button
-        onClick={resetFilters}
-        className="btn btn-primary bg-blue-50 text-blue-500"
-        aria-label="Clear filters"
-      >
-        Clear Filters
-      </button>
-    </div>
+   
   </div>
 );
 
