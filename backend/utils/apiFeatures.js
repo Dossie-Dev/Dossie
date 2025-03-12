@@ -50,6 +50,7 @@ class APIFeatures {
     let populated = [
       { path: "user", options: { strictPopulate: false } },
       { path: "company", option: { strictPopulate: false } },
+      { path: "companyId", option: { strictPopulate: false } },
     ]; // Fix path
 
     let populateObj = [];
